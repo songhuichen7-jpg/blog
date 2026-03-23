@@ -3,6 +3,8 @@ import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { siteConfig } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+
 export default async function AboutPage() {
   const [postCount, categoryCount, subscriberCount] = await Promise.all([
     prisma.post.count({

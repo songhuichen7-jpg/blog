@@ -4,22 +4,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { MarkdownRenderer } from "@/components/markdown-renderer";
-import { getPostBySlug, listPublishedPostSlugs } from "@/lib/blog";
+import { getPostBySlug } from "@/lib/blog";
 import { formatChineseDate } from "@/lib/utils";
+
+export const dynamic = "force-dynamic";
 
 type PostPageProps = {
   params: Promise<{
     slug: string;
   }>;
 };
-
-export async function generateStaticParams() {
-  const slugs = await listPublishedPostSlugs();
-
-  return slugs.map((post) => ({
-    slug: post.slug,
-  }));
-}
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
   const { slug } = await params;

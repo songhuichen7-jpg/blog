@@ -4,6 +4,8 @@ import Link from "next/link";
 import { getArchiveGroups } from "@/lib/blog";
 import { formatChineseDate } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export default async function ArchivePage() {
   const groups = await getArchiveGroups();
   const totalPublished = groups.reduce((sum, group) => sum + group.posts.length, 0);

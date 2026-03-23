@@ -4,6 +4,8 @@ import Link from "next/link";
 import { getHomePageData } from "@/lib/blog";
 import { formatChineseDate } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 type HomePageProps = {
   searchParams: Promise<{ category?: string }>;
 };
