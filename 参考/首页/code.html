@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Curator | AI 索引</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&amp;family=Manrope:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error": "#fff7f6",
+              "on-tertiary-container": "#3f5264",
+              "on-secondary-fixed-variant": "#4e5f55",
+              "surface-container-low": "#f3f4f1",
+              "outline": "#777c79",
+              "outline-variant": "#afb3b0",
+              "primary-fixed": "#e4e2e1",
+              "surface": "#faf9f7",
+              "on-surface": "#2f3331",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-highest": "#e0e3e0",
+              "primary-container": "#e4e2e1",
+              "tertiary-fixed-dim": "#bfd4e9",
+              "on-primary-fixed": "#3f3f3f",
+              "on-primary": "#faf7f6",
+              "primary": "#5f5e5e",
+              "on-primary-container": "#525251",
+              "secondary": "#526358",
+              "on-primary-fixed-variant": "#5c5b5b",
+              "error-dim": "#4e0309",
+              "tertiary-dim": "#425567",
+              "surface-dim": "#d6dbd7",
+              "surface-container-high": "#e6e9e6",
+              "on-secondary": "#eafeef",
+              "error": "#9f403d",
+              "secondary-dim": "#46574c",
+              "inverse-on-surface": "#9d9d9b",
+              "on-background": "#2f3331",
+              "on-tertiary-fixed-variant": "#485c6e",
+              "secondary-container": "#d4e7d9",
+              "primary-fixed-dim": "#d6d4d3",
+              "surface-bright": "#faf9f7",
+              "secondary-fixed": "#d4e7d9",
+              "tertiary-fixed": "#cde2f8",
+              "on-surface-variant": "#5c605d",
+              "background": "#faf9f7",
+              "tertiary": "#4e6173",
+              "primary-dim": "#535252",
+              "surface-container": "#edeeeb",
+              "tertiary-container": "#cde2f8",
+              "on-secondary-fixed": "#324339",
+              "on-tertiary": "#f6f9ff",
+              "surface-variant": "#e0e3e0",
+              "on-tertiary-fixed": "#2c3f50",
+              "inverse-primary": "#ffffff",
+              "on-secondary-container": "#45564b",
+              "on-error-container": "#752121",
+              "surface-tint": "#5f5e5e",
+              "secondary-fixed-dim": "#c6d9cb",
+              "inverse-surface": "#0d0e0e",
+              "error-container": "#fe8983"
+            },
+            fontFamily: {
+              "noto-serif": ["Noto Serif SC", "serif"],
+              "manrope": ["Manrope", "sans-serif"],
+              "headline": ["Noto Serif SC"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Manrope', 'Noto Serif SC', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shadow-[0_10px_40px_rgba(47,51,49,0.05)]">
+<div class="flex justify-between items-center w-full px-8 py-6 max-w-7xl mx-auto">
+<div class="text-2xl font-noto-serif italic text-zinc-900 dark:text-zinc-50">
+            The Curator
+        </div>
+<div class="hidden md:flex items-center space-x-12">
+<a class="text-zinc-500 dark:text-zinc-400 font-medium pb-1 font-manrope tracking-tight hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors duration-300" href="#">研究</a>
+<a class="text-zinc-500 dark:text-zinc-400 font-medium pb-1 font-manrope tracking-tight hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors duration-300" href="#">关于</a>
+<a class="text-zinc-900 dark:text-zinc-50 font-semibold border-b-2 border-zinc-800 dark:border-zinc-200 pb-1 font-manrope tracking-tight" href="#">归档</a>
+</div>
+<div class="flex items-center space-x-6">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">search</button>
+<button class="md:hidden material-symbols-outlined text-on-surface">menu</button>
+</div>
+</div>
+</nav>
+<main class="pt-32 pb-24 px-6 md:px-8 max-w-7xl mx-auto overflow-x-hidden">
+<!-- Featured Section -->
+<section class="mb-32">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<div class="lg:col-span-7 relative group overflow-hidden">
+<div class="aspect-[4/3] w-full bg-surface-container overflow-hidden">
+<img alt="AI and Creativity" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Abstract translucent waves of light suggesting neural pathways and digital fluidity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6OtfGLotOIxGZ0Qv1CixQW162IiT536uptL9BabVV2oVr5npCXivmLRcuNoJS3Lq9oTxHjwOWKTgbH5VieKCPvRTbNlPoua6jhvzCqBb536b0o2DHBSMQg2QNDOIKZPGdqMrz6D8X8qNo4WHZ9nixkrcKj6X0wpyGZspVaVi_sm1YZlniS4lNq84-kjY-fxioT3bidIwXIW84Og1JJzpNbFuwu5-_nRLxJDhKGDwttc7WglSGJVd_yiaOPmo5F1U96fqhAE6pff0"/>
+</div>
+</div>
+<div class="lg:col-span-5 flex flex-col justify-center">
+<span class="text-xs uppercase tracking-widest font-manrope text-on-surface-variant mb-6 flex items-center gap-2">
+<span class="w-8 h-[1px] bg-outline-variant/30"></span> FEATURED RESEARCH
+                </span>
+<h1 class="font-noto-serif text-4xl md:text-5xl lg:text-6xl text-zinc-900 dark:text-zinc-50 leading-tight mb-8 -tracking-wider">
+                    AI 与 创造力的共生：重塑数字设计的边界
+                </h1>
+<p class="font-manrope text-lg text-on-surface-variant mb-8 leading-relaxed max-w-md">
+                    探索生成式模型如何作为“共创者”融入设计流，从算法逻辑中挖掘人类感知无法企及的新维度。
+                </p>
+<div class="flex items-center gap-4 mb-10">
+<span class="text-xs font-manrope uppercase tracking-widest text-on-surface-variant">2024年11月20日</span>
+<span class="text-zinc-300">|</span>
+<span class="text-xs font-manrope uppercase tracking-widest text-secondary font-semibold">生成美学</span>
+</div>
+<a class="inline-flex items-center gap-3 text-primary font-manrope font-semibold group" href="#">
+                    阅读深度论述 
+                    <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">arrow_forward</span>
+</a>
+</div>
+</div>
+</section>
+<!-- Grid Feed Section -->
+<section>
+<div class="flex flex-col md:flex-row justify-between items-baseline mb-16 border-b border-outline-variant/10 pb-8">
+<h2 class="font-noto-serif text-3xl text-zinc-800">LATEST 技术与美</h2>
+<div class="flex gap-8 mt-6 md:mt-0">
+<button class="text-xs uppercase tracking-widest text-zinc-900 border-b border-zinc-900 font-semibold">全部</button>
+<button class="text-xs uppercase tracking-widest text-zinc-400 hover:text-zinc-600 transition-colors">算法</button>
+<button class="text-xs uppercase tracking-widest text-zinc-400 hover:text-zinc-600 transition-colors">界面</button>
+<button class="text-xs uppercase tracking-widest text-zinc-400 hover:text-zinc-600 transition-colors">硬件</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-20">
+<!-- Card 1: Latent Space -->
+<article class="group">
+<div class="aspect-[3/4] mb-8 overflow-hidden bg-surface-container-low transition-colors duration-300 group-hover:bg-surface-container-high">
+<img alt="Latent Space Art" class="w-full h-full object-cover opacity-90 transition-all duration-500 group-hover:opacity-100 group-hover:scale-[1.02]" data-alt="Abstract fluid patterns in soft grey and silver representing high-dimensional space" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtfz6EdwlkWbSGfTwKjsqSLqFpooJRxHDacGZEfj5SjNfem_BvvrdyvwChulFCRF3SIp1o3A_nFZA_2F3O0iau5nyammgzyVGzB6e7ueG0Ie9qWcAduvS70-OFPIjKAiALpQ38wjhTUlpnEqUXIjRIxaZeY52vQWOxU1LVdbW0HXWjt1SJ_yNC2rbaiLOuyWcc2BVCmYSEaRFmAiRT8R4h0tHSTzcD8sS1txgNZcud2jka6x1-wUmhqWZ203y6pFjSqK7U7qP5pXk"/>
+</div>
+<div class="px-2">
+<div class="flex items-center gap-3 mb-4">
+<span class="text-[10px] font-manrope uppercase tracking-[0.2em] text-secondary font-bold">ALGORITHMS</span>
+<span class="text-[10px] font-manrope uppercase tracking-[0.2em] text-on-surface-variant/60">10 分钟阅读</span>
+</div>
+<h3 class="font-noto-serif text-2xl mb-4 text-zinc-900 leading-snug">潜空间中的美学：生成式对抗网络的艺术表达</h3>
+<p class="font-manrope text-sm text-on-surface-variant leading-relaxed mb-6 line-clamp-2">
+                        深入 GANs 的内部机制，探讨如何通过操控高维向量来捕捉并重构经典艺术的形式美感。
+                    </p>
+<div class="text-[10px] font-manrope uppercase tracking-widest text-on-surface-variant">2024年11月05日</div>
+</div>
+</article>
+<!-- Card 2: Code Poetry -->
+<article class="group">
+<div class="aspect-[3/4] mb-8 overflow-hidden bg-surface-container-low transition-colors duration-300 group-hover:bg-surface-container-high">
+<img alt="Code and Logic" class="w-full h-full object-cover opacity-90 transition-all duration-500 group-hover:opacity-100 group-hover:scale-[1.02]" data-alt="Minimalist glowing circuit patterns on a white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrrD6g5lHQbTD_NJxjJf7rArqxKlHrG2m_KcW_kk_vrkTzB4ra8YNxFgzviPvXz20j19F-9ux_3JrRiu3eq8y_-YNlhhTfPDWfa4ZXinYUApQbur_naqH9KcYuBz-7KLGjv4aM8oJdaGxTyE4aVD1YWTxZ_WosSvuAatkceNXabg03aI9zG6pikbmAgf85hGBQJrir6rfb0Hwia-EDwjcQWloLtXrt1rvzx92ZHHURibUJ3Wcahlw40hE3f3YiHnuzkkOopzY9ERM"/>
+</div>
+<div class="px-2">
+<div class="flex items-center gap-3 mb-4">
+<span class="text-[10px] font-manrope uppercase tracking-[0.2em] text-secondary font-bold">INTERFACE</span>
+<span class="text-[10px] font-manrope uppercase tracking-[0.2em] text-on-surface-variant/60">06 分钟阅读</span>
+</div>
+<h3 class="font-noto-serif text-2xl mb-4 text-zinc-900 leading-snug">代码之诗：大语言模型在辅助编程中的逻辑与美感</h3>
+<p class="font-manrope text-sm text-on-surface-variant leading-relaxed mb-6 line-clamp-2">
+                        LLM 不仅仅是效率工具，其生成的代码逻辑正在形成一种全新的、简洁的数字化结构语言。
+                    </p>
+<div class="text-[10px] font-manrope uppercase tracking-widest text-on-surface-variant">2024年10月28日</div>
+</div>
+</article>
+<!-- Card 3: Tactile Intelligence -->
+<article class="group">
+<div class="aspect-[3/4] mb-8 overflow-hidden bg-surface-container-low transition-colors duration-300 group-hover:bg-surface-container-high">
+<img alt="Robotics and Interaction" class="w-full h-full object-cover opacity-90 transition-all duration-500 group-hover:opacity-100 group-hover:scale-[1.02]" data-alt="A robotic hand gently touching a glass surface with soft bokeh" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJG2eA1vIBJ6gyV4EBdounl3sa0fX0r2Aes395TmZKNY7hyJz34gZfMtAGmmVLctBQ0D5i3n6wcuiaYWGQb-Sb4-Y_fMP8z5nYuIuSMm_UJ0XlGybvbUbt789ZUVX5Qck56QtsOKL6KXCN1oC8jK2y4Id_x97iPBxtdh22rSh_KhyUwu-SjAjF56bl2Meb9DaaDc_AeGuqBNMdn6iY7LgxbvmFoVnA8rIto5CoO0_nf6dcLPU7RegJ3PdFJfOoCuxzKYX-MXIQxEI"/>
+</div>
+<div class="px-2">
+<div class="flex items-center gap-3 mb-4">
+<span class="text-[10px] font-manrope uppercase tracking-[0.2em] text-secondary font-bold">HARDWARE</span>
+<span class="text-[10px] font-manrope uppercase tracking-[0.2em] text-on-surface-variant/60">15 分钟阅读</span>
+</div>
+<h3 class="font-noto-serif text-2xl mb-4 text-zinc-900 leading-snug">触感智能：机器人视觉与物理世界的交互设计</h3>
+<p class="font-manrope text-sm text-on-surface-variant leading-relaxed mb-6 line-clamp-2">
+                        当感知算法跨越虚拟边界，如何赋予机器人如人类般细腻的物理反馈与环境理解。
+                    </p>
+<div class="text-[10px] font-manrope uppercase tracking-widest text-on-surface-variant">2024年10月12日</div>
+</div>
+</article>
+<!-- Card 4 (Asymmetric bleeding) -->
+<article class="group md:col-span-2">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+<div class="md:col-span-8 overflow-hidden bg-surface-container-low aspect-video transition-colors duration-300 group-hover:bg-surface-container-high">
+<img alt="Data Architecture" class="w-full h-full object-cover opacity-90 transition-all duration-500 group-hover:opacity-100 group-hover:scale-[1.01]" data-alt="Large scale abstract visualization of data nodes in a dark void" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAncUpFPzWoALegqwLnmOBT2ceG2BvOWEUx4s9rr6aMwYmb1fFG8APH4QMM5zQxOveO1O71vzMfBOXZpRDrBlKvbY6k-5IP5ahWKbBZRhTfw_VOWHCi5OKtfrpBGO-9emjswHtwcK4ZQzxFv2v7mlPhbl29XFKKatKbNHqSWjeEg9XqyNiAZsoP7a_h7LrqnO8PLz0MnCfTsOaiBLN5vVCPd891zGIUUVOA-mt-hlP0sLYmhMIx65HJxMFJkZBCsfMXdtYMAXxIlr4"/>
+</div>
+<div class="md:col-span-4 px-2">
+<div class="flex items-center gap-3 mb-4">
+<span class="text-[10px] font-manrope uppercase tracking-[0.2em] text-secondary font-bold">DATA SCULPTURE</span>
+</div>
+<h3 class="font-noto-serif text-2xl mb-4 text-zinc-900 leading-snug">信息流的形态：大数据可视化中的叙事张力</h3>
+<p class="font-manrope text-sm text-on-surface-variant leading-relaxed mb-6">
+                            将冰冷的服务器日志转化为具有生命感的流动视觉，探索数据背后的诗意真相。
+                        </p>
+<div class="text-[10px] font-manrope uppercase tracking-widest text-on-surface-variant">2024年10月01日</div>
+</div>
+</div>
+</article>
+<!-- Card 5 -->
+<article class="group">
+<div class="aspect-[3/4] mb-8 overflow-hidden bg-surface-container-low transition-colors duration-300 group-hover:bg-surface-container-high">
+<img alt="Future Theory" class="w-full h-full object-cover opacity-90 transition-all duration-500 group-hover:opacity-100 group-hover:scale-[1.02]" data-alt="Reflective metallic spheres suspended in a minimalist gallery" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnnODdLqv2ESLYD_RdZrCis-C1GovCskVa2bAX_a6mNIho5iF0UVMDYEIS6tu8bsGFNM1OoOP_Q888hPC3hYhkie2hLL-E_8FoCgHDCkoLTyMCAzT6yP3WPfER0oM0JTaZx69W0UuHfm7BCCLVRCpmdF7FTb5JzrJ5uXRb_MyLPgwPTY30vs0MXV3jEcc3jqqBYcHRu_CdtJhDRX2sqvrJWIwjPp-5Hb45abhGngyhRTIq5HTQIEYDO6UAxBmpoyWZVoP6JoQ_udc"/>
+</div>
+<div class="px-2">
+<div class="flex items-center gap-3 mb-4">
+<span class="text-[10px] font-manrope uppercase tracking-[0.2em] text-secondary font-bold">ETHICS</span>
+<span class="text-[10px] font-manrope uppercase tracking-[0.2em] text-on-surface-variant/60">08 分钟阅读</span>
+</div>
+<h3 class="font-noto-serif text-2xl mb-4 text-zinc-900 leading-snug">重申“透明”：AI时代的伦理美学</h3>
+<p class="font-manrope text-sm text-on-surface-variant leading-relaxed mb-6 line-clamp-2">
+                        关于黑盒设计的反思，以及如何在算法透明度与产品简洁性之间达成平衡。
+                    </p>
+<div class="text-[10px] font-manrope uppercase tracking-widest text-on-surface-variant">2024年09月15日</div>
+</div>
+</article>
+</div>
+<!-- Pagination/More -->
+<div class="mt-32 flex justify-center">
+<button class="px-12 py-4 bg-primary text-on-primary font-manrope text-sm font-semibold rounded-md shadow-[0_10px_40px_rgba(47,51,49,0.05)] transition-transform hover:scale-[1.02] active:scale-[0.98]">
+                获取更多研究
+            </button>
+</div>
+</section>
+<!-- Newsletter Section -->
+<section class="mt-48 py-24 bg-surface-container rounded-xl text-center px-6">
+<span class="text-[10px] font-manrope uppercase tracking-[0.3em] text-on-surface-variant mb-6 block">JOIN THE SYNTHESIS</span>
+<h2 class="font-noto-serif text-4xl mb-8 text-zinc-900">每周简讯</h2>
+<p class="font-manrope text-on-surface-variant max-w-md mx-auto mb-12">
+            订阅我们的周日社论，获取前沿AI研究综述与精选算法美学灵感。
+        </p>
+<form class="max-w-md mx-auto flex flex-col md:flex-row gap-4">
+<input class="flex-grow bg-surface-container-low border border-outline-variant/15 px-6 py-4 focus:outline-none focus:border-outline transition-all font-manrope text-sm rounded-md" placeholder="您的学术/工作邮箱" type="email"/>
+<button class="bg-primary text-on-primary px-8 py-4 font-manrope text-sm font-bold uppercase tracking-widest rounded-md hover:bg-primary-dim transition-colors">订阅</button>
+</form>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-zinc-200/15 dark:border-zinc-800/15 bg-zinc-50 dark:bg-zinc-950">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-12 max-w-7xl mx-auto gap-6">
+<div class="font-noto-serif text-lg italic text-zinc-800 dark:text-zinc-200">
+            The Curator
+        </div>
+<div class="flex gap-10 font-manrope text-sm tracking-wide text-zinc-500 dark:text-zinc-400">
+<a class="hover:underline underline-offset-4 decoration-zinc-300 transition-all hover:text-zinc-900 dark:hover:text-zinc-50" href="#">研究发布</a>
+<a class="hover:underline underline-offset-4 decoration-zinc-300 transition-all hover:text-zinc-900 dark:hover:text-zinc-50" href="#">LinkedIn</a>
+<a class="hover:underline underline-offset-4 decoration-zinc-300 transition-all hover:text-zinc-900 dark:hover:text-zinc-50" href="#">arXiv 索引</a>
+</div>
+<div class="font-manrope text-sm tracking-wide text-zinc-600 dark:text-zinc-400 opacity-60">
+            © 2024 The Curator Editorial. 基于算法与感知的共生。
+        </div>
+</div>
+</footer>
+</body></html>

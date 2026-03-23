@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Curator | Editor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-low": "#f3f4f1",
+                        "primary-dim": "#535252",
+                        "tertiary-fixed": "#cde2f8",
+                        "secondary-container": "#d4e7d9",
+                        "on-surface-variant": "#5c605d",
+                        "on-secondary-fixed": "#324339",
+                        "error-dim": "#4e0309",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#e6e9e6",
+                        "on-tertiary": "#f6f9ff",
+                        "primary-fixed-dim": "#d6d4d3",
+                        "surface-dim": "#d6dbd7",
+                        "on-primary-fixed-variant": "#5c5b5b",
+                        "on-surface": "#2f3331",
+                        "error": "#9f403d",
+                        "surface-variant": "#e0e3e0",
+                        "surface-tint": "#5f5e5e",
+                        "on-secondary": "#eafeef",
+                        "on-error-container": "#752121",
+                        "secondary": "#526358",
+                        "inverse-surface": "#0d0e0e",
+                        "primary-container": "#e4e2e1",
+                        "surface-bright": "#faf9f7",
+                        "background": "#faf9f7",
+                        "tertiary-dim": "#425567",
+                        "surface": "#faf9f7",
+                        "on-tertiary-fixed-variant": "#485c6e",
+                        "surface-container": "#edeeeb",
+                        "on-tertiary-fixed": "#2c3f50",
+                        "on-error": "#fff7f6",
+                        "tertiary-fixed-dim": "#bfd4e9",
+                        "error-container": "#fe8983",
+                        "tertiary": "#4e6173",
+                        "on-primary": "#faf7f6",
+                        "primary": "#5f5e5e",
+                        "outline": "#777c79",
+                        "on-primary-fixed": "#3f3f3f",
+                        "on-secondary-container": "#45564b",
+                        "tertiary-container": "#cde2f8",
+                        "secondary-dim": "#46574c",
+                        "on-background": "#2f3331",
+                        "inverse-on-surface": "#9d9d9b",
+                        "outline-variant": "#afb3b0",
+                        "inverse-primary": "#ffffff",
+                        "surface-container-highest": "#e0e3e0"
+                    },
+                    fontFamily: {
+                        "headline": ["Noto Serif"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #faf9f7;
+            font-family: 'Manrope', sans-serif;
+            color: #2f3331;
+        }
+        .serif-headline { font-family: 'Noto Serif', serif; }
+        .glass-nav {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #afb3b0; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface selection:bg-secondary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#faf9f7]/80 dark:bg-[#2f3331]/80 backdrop-blur-xl shadow-[0_10px_40px_rgba(47,51,49,0.05)]">
+<div class="flex justify-between items-center px-8 py-6 w-full max-w-[1440px] mx-auto relative">
+<div class="flex items-center gap-12">
+<span class="text-2xl font-serif italic text-[#2f3331] dark:text-[#faf9f7]">The Curator</span>
+<nav class="hidden md:flex items-center gap-8 font-['Noto_Serif'] font-medium tracking-tight text-[#5f5e5e] dark:text-[#afb3b0]">
+<a class="text-[#777c79] dark:text-[#afb3b0] hover:text-[#2f3331] transition-all duration-300 ease-in-out hover:opacity-70" href="#">Essays</a>
+<a class="text-[#777c79] dark:text-[#afb3b0] hover:text-[#2f3331] transition-all duration-300 ease-in-out hover:opacity-70" href="#">Archives</a>
+<a class="text-[#777c79] dark:text-[#afb3b0] hover:text-[#2f3331] transition-all duration-300 ease-in-out hover:opacity-70" href="#">About</a>
+</nav>
+</div>
+<div class="flex items-center gap-6 text-[#5f5e5e]">
+<button class="material-symbols-outlined hover:opacity-70 transition-opacity" data-icon="search">search</button>
+<button class="material-symbols-outlined hover:opacity-70 transition-opacity" data-icon="settings">settings</button>
+<button class="material-symbols-outlined hover:opacity-70 transition-opacity" data-icon="account_circle">account_circle</button>
+</div>
+<div class="bg-[#edeeeb] dark:bg-[#3a3e3c] h-[1px] w-full absolute bottom-0 left-0 opacity-10"></div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="h-full w-64 fixed left-0 top-0 border-r border-[#afb3b0]/15 bg-[#faf9f7] dark:bg-[#2f3331] z-40 hidden md:block">
+<div class="flex flex-col h-screen pt-24 pb-8">
+<div class="px-8 mb-8">
+<h2 class="font-['Manrope'] text-sm tracking-wide uppercase font-bold text-[#5f5e5e]">Editor</h2>
+<p class="text-xs text-[#777c79] mt-1">Drafting Mode</p>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<!-- Write is Active -->
+<a class="flex items-center gap-4 px-4 py-3 bg-[#edeeeb] dark:bg-[#3a3e3c] text-[#2f3331] dark:text-white font-bold rounded-r-lg translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="edit_note">edit_note</span>
+<span class="font-['Manrope'] text-sm tracking-wide uppercase">Write</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-[#777c79] dark:text-[#afb3b0] hover:bg-[#edeeeb]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="description">description</span>
+<span class="font-['Manrope'] text-sm tracking-wide uppercase">Drafts</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-[#777c79] dark:text-[#afb3b0] hover:bg-[#edeeeb]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="image">image</span>
+<span class="font-['Manrope'] text-sm tracking-wide uppercase">Media</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 text-[#777c79] dark:text-[#afb3b0] hover:bg-[#edeeeb]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-xl" data-icon="tune">tune</span>
+<span class="font-['Manrope'] text-sm tracking-wide uppercase">Settings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full bg-primary text-on-primary py-3 rounded-md font-bold text-sm tracking-widest uppercase hover:scale-[1.02] transition-transform">
+                    Publish Essay
+                </button>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-24 min-h-screen flex flex-col lg:flex-row">
+<!-- Editor Canvas -->
+<section class="flex-1 px-8 lg:px-16 py-12 max-w-4xl mx-auto w-full">
+<div class="mb-12">
+<span class="label-sm uppercase tracking-[0.2em] text-outline text-[10px] font-bold block mb-4">New Entry</span>
+<textarea class="w-full bg-transparent border-none focus:ring-0 serif-headline text-5xl md:text-6xl font-bold placeholder:text-surface-variant text-on-surface resize-none leading-tight" placeholder="Enter title..." rows="2"></textarea>
+</div>
+<div class="relative group">
+<div class="absolute -left-12 top-0 flex flex-col gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<button class="p-2 hover:bg-surface-container rounded-full text-outline" title="Add Image">
+<span class="material-symbols-outlined">add_a_photo</span>
+</button>
+<button class="p-2 hover:bg-surface-container rounded-full text-outline" title="Add Quote">
+<span class="material-symbols-outlined">format_quote</span>
+</button>
+</div>
+<textarea class="w-full bg-transparent border-none focus:ring-0 font-body text-lg md:text-xl leading-relaxed placeholder:text-surface-variant text-on-surface-variant min-h-[614px] resize-none" placeholder="Begin your narrative..."></textarea>
+</div>
+</section>
+<!-- Editorial Sidebar (Details Panel) -->
+<aside class="w-full lg:w-80 bg-surface-container px-8 py-12 lg:fixed lg:right-0 lg:top-24 lg:h-[calc(100vh-6rem)] overflow-y-auto custom-scrollbar">
+<div class="space-y-10">
+<!-- Metadata Section -->
+<section>
+<h3 class="font-['Manrope'] text-[10px] tracking-[0.2em] uppercase font-extrabold text-on-surface-variant mb-6">Curation Details</h3>
+<div class="space-y-6">
+<div>
+<label class="block text-xs font-bold text-outline mb-2 uppercase tracking-wider">Category</label>
+<select class="w-full bg-surface-container-lowest border-none rounded-md text-sm py-3 focus:ring-1 focus:ring-outline/20">
+<option>Art &amp; Culture</option>
+<option>Architecture</option>
+<option>Design Theory</option>
+<option>Personal Essay</option>
+</select>
+</div>
+<div>
+<label class="block text-xs font-bold text-outline mb-2 uppercase tracking-wider">Tags</label>
+<div class="flex flex-wrap gap-2 mb-3">
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                                    Minimalism <span class="material-symbols-outlined text-xs cursor-pointer">close</span>
+</span>
+<span class="px-3 py-1 bg-secondary-fixed text-on-secondary-fixed rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                                    Editorial <span class="material-symbols-outlined text-xs cursor-pointer">close</span>
+</span>
+</div>
+<input class="w-full bg-transparent border-b border-outline-variant/30 focus:border-outline text-sm py-2 px-1 focus:ring-0 outline-none transition-colors" placeholder="Add tag..." type="text"/>
+</div>
+</div>
+</section>
+<!-- Featured Image -->
+<section>
+<h3 class="font-['Manrope'] text-[10px] tracking-[0.2em] uppercase font-extrabold text-on-surface-variant mb-6">Visual Anchor</h3>
+<div class="aspect-[4/5] bg-surface-container-high rounded-lg overflow-hidden relative group cursor-pointer border border-dashed border-outline-variant/30 flex items-center justify-center">
+<div class="text-center p-6">
+<span class="material-symbols-outlined text-3xl text-outline-variant mb-2">add_photo_alternate</span>
+<p class="text-[10px] font-bold uppercase tracking-widest text-outline">Upload Cover</p>
+</div>
+<img class="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-40 transition-opacity" data-alt="Abstract minimalist shadow on a textured wall" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWkObO1QHw7gi6Q3ek0PR3lXEc7V97_fqVUqghMAoWtsrJBG6yqXnXsYm-6xbJxi0ka-RC6Il6ivSASAl4ppW8fUDSj-8TLMkxEiXnBUqhMxBErvyarExFMfvGqqSXJrUL9knzqyqCKpx_rufom-M8O3H_vmQ-2S-ka4EgmHabKQws8wwa6Mx56HTAbu9_b7ABquKH3igMUebJxe3JTyhf1bJPUIXfd1ke5k-Afbn_2PPNatDUar2tb4Xt3FOcbIbwF9XiNhdI0u8"/>
+</div>
+</section>
+<!-- Actions -->
+<section class="pt-6 space-y-3">
+<button class="w-full bg-primary text-on-primary py-4 rounded-md font-bold text-sm tracking-widest uppercase hover:scale-[1.01] transition-transform shadow-md">
+                        Publish Essay
+                    </button>
+<button class="w-full border border-outline-variant/20 text-on-surface-variant py-4 rounded-md font-bold text-sm tracking-widest uppercase hover:bg-surface-container-lowest transition-colors">
+                        Save as Draft
+                    </button>
+<button class="w-full text-error font-bold text-[10px] tracking-widest uppercase py-2 hover:underline">
+                        Discard Entry
+                    </button>
+</section>
+</div>
+</aside>
+</main>
+<!-- Contextual FAB (Mobile Only) -->
+<div class="md:hidden fixed bottom-8 right-8 z-50">
+<button class="w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="publish">publish</span>
+</button>
+</div>
+<!-- Bottom Navigation (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full bg-surface/90 backdrop-blur-md flex justify-around items-center py-4 border-t border-outline-variant/10 z-50">
+<button class="flex flex-col items-center gap-1 text-on-surface">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">edit_note</span>
+<span class="text-[9px] uppercase font-bold tracking-tighter">Write</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-outline">
+<span class="material-symbols-outlined">description</span>
+<span class="text-[9px] uppercase font-bold tracking-tighter">Drafts</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-outline">
+<span class="material-symbols-outlined">image</span>
+<span class="text-[9px] uppercase font-bold tracking-tighter">Media</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-outline">
+<span class="material-symbols-outlined">tune</span>
+<span class="text-[9px] uppercase font-bold tracking-tighter">Settings</span>
+</button>
+</nav>
+</body></html>

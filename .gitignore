@@ -1,0 +1,11 @@
+node_modules
+.next
+dist
+.DS_Store
+.env
+.env.local
+coverage
+*.log
+.claude
+.code-review-graph
+tsconfig.tsbuildinfo

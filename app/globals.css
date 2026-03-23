@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background: #faf9f7;
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  transition:
+    color 300ms ease-in-out,
+    background-color 300ms ease-in-out,
+    border-color 300ms ease-in-out,
+    transform 300ms ease-in-out,
+    opacity 300ms ease-in-out;
+}
+
+img {
+  display: block;
+}
+
+::selection {
+  background: #d4e7d9;
+  color: #324339;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 300,
+    "GRAD" 0,
+    "opsz" 24;
+  line-height: 1;
+}
+
+.editorial-dropcap > p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--font-noto-serif), var(--font-noto-serif-sc), serif;
+  font-size: 5rem;
+  line-height: 0.8;
+  padding-right: 0.75rem;
+  padding-top: 0.5rem;
+  font-weight: 700;
+  color: #2f3331;
+}
+
+.editorial-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.editorial-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.editorial-scrollbar::-webkit-scrollbar-thumb {
+  background: #afb3b0;
+  border-radius: 9999px;
+}
+
+.balanced-text {
+  text-wrap: balance;
+}
