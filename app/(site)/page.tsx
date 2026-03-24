@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import { getHomePageData } from "@/lib/blog";
+import { PostImage } from "@/components/post-image";
 import { formatChineseDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -32,7 +32,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               className="group relative overflow-hidden lg:col-span-7"
             >
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-container">
-                <Image
+                <PostImage
                   src={featured.coverImage}
                   alt={featured.coverAlt || featured.title}
                   fill
@@ -135,7 +135,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 <article key={post.id} className="group">
                   <Link href={`/posts/${post.slug}`} className="block">
                     <div className="relative mb-8 aspect-[3/4] overflow-hidden bg-surface-container-low transition-colors duration-300 group-hover:bg-surface-container-high">
-                      <Image
+                      <PostImage
                         src={post.coverImage}
                         alt={post.coverAlt || post.title}
                         fill
@@ -173,7 +173,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                     className="grid grid-cols-1 items-center gap-8 md:grid-cols-12"
                   >
                     <div className="relative aspect-video overflow-hidden bg-surface-container-low transition-colors duration-300 group-hover:bg-surface-container-high md:col-span-8">
-                      <Image
+                      <PostImage
                         src={widePost.coverImage}
                         alt={widePost.coverAlt || widePost.title}
                         fill
@@ -205,7 +205,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 <article key={finalPost.id} className="group">
                   <Link href={`/posts/${finalPost.slug}`} className="block">
                     <div className="relative mb-8 aspect-[3/4] overflow-hidden bg-surface-container-low transition-colors duration-300 group-hover:bg-surface-container-high">
-                      <Image
+                      <PostImage
                         src={finalPost.coverImage}
                         alt={finalPost.coverAlt || finalPost.title}
                         fill
@@ -241,7 +241,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 <article key={post.id} className="group">
                   <Link href={`/posts/${post.slug}`} className="block">
                     <div className="relative mb-8 aspect-[3/4] overflow-hidden bg-surface-container-low transition-colors duration-300 group-hover:bg-surface-container-high">
-                      <Image
+                      <PostImage
                         src={post.coverImage}
                         alt={post.coverAlt || post.title}
                         fill

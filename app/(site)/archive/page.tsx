@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import { getArchiveGroups } from "@/lib/blog";
+import { PostImage } from "@/components/post-image";
 import { formatChineseDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -76,7 +76,7 @@ export default async function ArchivePage() {
 
       <div className="py-12">
         <div className="relative h-[400px] w-full overflow-hidden rounded-lg bg-surface-container">
-          <Image
+          <PostImage
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrrD6g5lHQbTD_NJxjJf7rArqxKlHrG2m_KcW_kk_vrkTzB4ra8YNxFgzviPvXz20j19F-9ux_3JrRiu3eq8y_-YNlhhTfPDWfa4ZXinYUApQbur_naqH9KcYuBz-7KLGjv4aM8oJdaGxTyE4aVD1YWTxZ_WosSvuAatkceNXabg03aI9zG6pikbmAgf85hGBQJrir6rfb0Hwia-EDwjcQWloLtXrt1rvzx92ZHHURibUJ3Wcahlw40hE3f3YiHnuzkkOopzY9ERM"
             alt="代码与终端界面"
             fill

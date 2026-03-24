@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { PostImage } from "@/components/post-image";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -68,7 +69,7 @@ export default async function PostPage({ params }: PostPageProps) {
       <main className="mx-auto max-w-7xl px-8 pb-32">
         <div className="mb-24 w-full overflow-hidden rounded-xl bg-surface-container">
           <div className="relative aspect-[21/9]">
-            <Image
+            <PostImage
               src={post.coverImage}
               alt={post.coverAlt || post.title}
               fill
@@ -128,13 +129,15 @@ export default async function PostPage({ params }: PostPageProps) {
 
             <section className="mt-24 flex flex-col items-center gap-8 rounded-xl bg-surface-container-low p-12 text-center md:flex-row md:items-start md:text-left">
               <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-surface-container-highest grayscale">
-                <Image
-                  src={post.authorAvatar || ""}
-                  alt={post.authorName}
-                  fill
-                  sizes="96px"
-                  className="object-cover"
-                />
+                {post.authorAvatar && (
+                  <Image
+                    src={post.authorAvatar}
+                    alt={post.authorName}
+                    fill
+                    sizes="96px"
+                    className="object-cover"
+                  />
+                )}
               </div>
               <div className="space-y-4">
                 <h4 className="font-headline text-xl font-bold">{post.authorName}</h4>
