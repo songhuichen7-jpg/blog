@@ -3,16 +3,6 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   typedRoutes: true,
   images: {
-    localPatterns: [
-      {
-        pathname: "/uploads/**",
-        search: "",
-      },
-      {
-        pathname: "/logo.png",
-        search: "",
-      },
-    ],
     remotePatterns: [
       {
         protocol: "https",

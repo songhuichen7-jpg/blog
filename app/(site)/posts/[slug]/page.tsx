@@ -32,12 +32,10 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
-  const session = await getSession();
+  const [post, session] = await Promise.all([getPostBySlug(slug), getSession().catch(() => null)]);
 
-  if (!post || (post.status !== "PUBLISHED" && !session)) {
-    notFound();
-  }
+  if (!post) notFound();
+  if (post.status !== "PUBLISHED" && !session) notFound();
 
   const showStandaloneQuote = Boolean(post.pullQuote) && !post.content.includes(">");
 

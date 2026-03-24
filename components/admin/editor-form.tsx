@@ -638,6 +638,7 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
                         </button>
                         <Link
                           href={`/posts/${draft.slug}`}
+                          target="_blank"
                           className="rounded border border-outline-variant/30 px-2.5 py-1 text-[10px] text-on-surface-variant hover:bg-surface-container-low"
                         >
                           预览
