@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/auth";
 
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
+const UPLOAD_DIR = path.join("/tmp", "uploads");
 
 export async function POST(request: Request) {
   const session = await getSession();
@@ -39,5 +39,5 @@ export async function POST(request: Request) {
   const buffer = Buffer.from(await file.arrayBuffer());
   await writeFile(path.join(UPLOAD_DIR, filename), buffer);
 
-  return NextResponse.json({ url: `/uploads/${filename}` });
+  return NextResponse.json({ url: `/api/images/${filename}` });
 }
