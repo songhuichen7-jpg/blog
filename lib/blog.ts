@@ -202,7 +202,11 @@ export async function updatePost(id: string, input: PostInput) {
       categoryId: input.categoryId,
       status: input.status,
       featured: input.featured,
-      publishedAt: becomingPublished ? new Date() : existing?.publishedAt,
+      publishedAt: input.publishedAt
+        ? new Date(input.publishedAt)
+        : becomingPublished
+          ? new Date()
+          : existing?.publishedAt,
       readTimeMinutes: calculateReadingTime(input.content),
       pullQuote: input.pullQuote?.trim() || null,
       relatedLinks: input.relatedLinks.length > 0 ? JSON.stringify(input.relatedLinks) : null,
@@ -246,7 +250,11 @@ export async function createPost(input: PostInput) {
       categoryId: input.categoryId,
       status: input.status,
       featured: input.featured,
-      publishedAt: input.status === PostStatus.PUBLISHED ? new Date() : null,
+      publishedAt: input.publishedAt
+        ? new Date(input.publishedAt)
+        : input.status === PostStatus.PUBLISHED
+          ? new Date()
+          : null,
       readTimeMinutes: calculateReadingTime(input.content),
       authorName: siteConfig.authorName,
       authorRole: siteConfig.authorRole,

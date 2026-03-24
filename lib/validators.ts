@@ -29,6 +29,7 @@ export const postInputSchema = z.object({
   status: z.enum(["DRAFT", "PUBLISHED"]),
   metaTitle: z.string().max(120, "SEO 标题不能超过 120 个字符。").optional().default(""),
   metaDescription: z.string().max(180, "SEO 描述不能超过 180 个字符。").optional().default(""),
+  publishedAt: z.string().optional(),
 });
 
 export type PostInput = z.infer<typeof postInputSchema>;

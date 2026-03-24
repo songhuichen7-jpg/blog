@@ -7,7 +7,7 @@ import Link from "next/link";
 
 import type { PostCard } from "@/lib/blog";
 
-type PostItem = Pick<Post, "id" | "slug" | "title" | "status" | "updatedAt"> & {
+type PostItem = Pick<Post, "id" | "slug" | "title" | "status" | "updatedAt" | "publishedAt"> & {
   category: Pick<Category, "name">;
 };
 
@@ -57,6 +57,12 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
     }
   );
   const [featured, setFeatured] = useState(editPost?.featured ?? false);
+  const [publishedAt, setPublishedAt] = useState<string>(() => {
+    if (editPost?.publishedAt) {
+      return new Date(editPost.publishedAt).toISOString().slice(0, 16);
+    }
+    return "";
+  });
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [savedSlug, setSavedSlug] = useState(editPost?.slug ?? "");
@@ -152,6 +158,7 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
             metaDescription: "",
             featured,
             status: intent,
+            publishedAt: publishedAt || undefined,
           }),
         });
 
@@ -464,6 +471,28 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
                   >
                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${featured ? "translate-x-6" : "translate-x-1"}`} />
                   </button>
+                </div>
+
+                <div>
+                  <label htmlFor="published-at" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-outline">
+                    发布日期（可修改）
+                  </label>
+                  <input
+                    id="published-at"
+                    type="datetime-local"
+                    value={publishedAt}
+                    onChange={(e) => setPublishedAt(e.target.value)}
+                    className="w-full rounded-md border border-outline-variant/20 bg-surface-container-lowest px-3 py-2.5 text-sm focus:border-outline focus:ring-0"
+                  />
+                  {publishedAt && (
+                    <button
+                      type="button"
+                      onClick={() => setPublishedAt("")}
+                      className="mt-1 text-[10px] text-outline hover:text-on-surface"
+                    >
+                      清除（使用当前时间）
+                    </button>
+                  )}
                 </div>
               </div>
             </section>
