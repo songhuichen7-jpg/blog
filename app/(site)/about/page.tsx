@@ -22,11 +22,11 @@ export default async function AboutPage() {
         <div className="relative mb-12 h-48 w-48 md:h-64 md:w-64">
           <div className="absolute inset-0 -z-10 scale-[1.05] rounded-full bg-surface-container" />
           <Image
-            src={siteConfig.authorAvatar}
+            src="/logo.png"
             alt={siteConfig.authorName}
             fill
             sizes="256px"
-            className="rounded-full object-cover grayscale contrast-110 shadow-sm"
+            className="rounded-full object-cover shadow-sm"
           />
         </div>
         <span className="mb-4 text-xs uppercase tracking-widest text-on-surface-variant">
