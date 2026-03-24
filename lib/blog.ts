@@ -152,8 +152,15 @@ export async function listPublishedPostSlugs() {
   });
 }
 
+function toAsciiSlug(title: string): string {
+  return slugify(title)
+    .replace(/[^\x00-\x7F]/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 async function resolveUniqueSlug(baseTitle: string) {
-  const baseSlug = slugify(baseTitle) || `post-${Date.now()}`;
+  const baseSlug = toAsciiSlug(baseTitle) || `post-${Date.now()}`;
   let currentSlug = baseSlug;
   let suffix = 1;
 
@@ -188,13 +195,18 @@ export async function updatePost(id: string, input: PostInput) {
     input.tags.map((tag) => tag.trim()).filter(Boolean),
   );
 
-  const existing = await prisma.post.findUnique({ where: { id }, select: { publishedAt: true, status: true } });
+  const existing = await prisma.post.findUnique({ where: { id }, select: { publishedAt: true, status: true, slug: true } });
   const becomingPublished = input.status === PostStatus.PUBLISHED && existing?.status !== PostStatus.PUBLISHED;
+
+  // Fix non-ASCII slugs (e.g. Chinese) that break URL routing in production
+  const hasNonAsciiSlug = existing?.slug && /[^\x00-\x7F]/.test(existing.slug);
+  const newSlug = hasNonAsciiSlug ? await resolveUniqueSlug(input.title) : undefined;
 
   return prisma.post.update({
     where: { id },
     data: {
       title: input.title.trim(),
+      ...(newSlug ? { slug: newSlug } : {}),
       excerpt: input.excerpt.trim(),
       content: input.content.trim(),
       coverImage: input.coverImage.trim(),
