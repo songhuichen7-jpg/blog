@@ -1,4 +1,5 @@
-import { put } from "@vercel/blob";
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
 import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/auth";
@@ -8,13 +9,6 @@ export async function POST(request: Request) {
 
   if (!session) {
     return NextResponse.json({ message: "请先登录。" }, { status: 401 });
-  }
-
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json(
-      { message: "图片上传未配置对象存储，请先设置 BLOB_READ_WRITE_TOKEN。" },
-      { status: 503 },
-    );
   }
 
   const formData = await request.formData();
@@ -39,7 +33,11 @@ export async function POST(request: Request) {
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
-  const blob = await put(filename, file, { access: "public" });
+  const uploadDir = path.join(process.cwd(), "public", "uploads");
+  await mkdir(uploadDir, { recursive: true });
 
-  return NextResponse.json({ url: blob.url });
+  const buffer = Buffer.from(await file.arrayBuffer());
+  await writeFile(path.join(uploadDir, filename), buffer);
+
+  return NextResponse.json({ url: `/uploads/${filename}` });
 }
