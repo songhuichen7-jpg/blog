@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { getPostBySlug } from "@/lib/blog";
+import { getSession } from "@/lib/auth";
 import { formatChineseDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -32,8 +33,9 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
+  const session = await getSession();
 
-  if (!post || post.status !== "PUBLISHED") {
+  if (!post || (post.status !== "PUBLISHED" && !session)) {
     notFound();
   }
 

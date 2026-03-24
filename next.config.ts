@@ -6,9 +6,11 @@ const nextConfig: NextConfig = {
     localPatterns: [
       {
         pathname: "/uploads/**",
+        search: "",
       },
       {
         pathname: "/logo.png",
+        search: "",
       },
     ],
     remotePatterns: [
