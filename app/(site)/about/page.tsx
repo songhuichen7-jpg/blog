@@ -6,14 +6,13 @@ import { siteConfig } from "@/lib/site";
 export const dynamic = "force-dynamic";
 
 export default async function AboutPage() {
-  const [postCount, categoryCount, subscriberCount] = await Promise.all([
+  const [postCount, categoryCount] = await Promise.all([
     prisma.post.count({
       where: {
         status: "PUBLISHED",
       },
     }),
     prisma.category.count(),
-    prisma.newsletterSubscriber.count(),
   ]);
 
   return (
@@ -68,11 +67,6 @@ export default async function AboutPage() {
           <p className="text-[10px] uppercase tracking-[0.2em] text-outline">Sections</p>
           <p className="mt-4 font-headline text-4xl italic text-on-surface">{categoryCount}</p>
           <p className="mt-2 text-sm text-on-surface-variant">正在维护的内容栏目</p>
-        </div>
-        <div className="rounded-xl bg-surface-container-low p-8">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-outline">Readers</p>
-          <p className="mt-4 font-headline text-4xl italic text-on-surface">{subscriberCount}</p>
-          <p className="mt-2 text-sm text-on-surface-variant">已订阅通讯的读者</p>
         </div>
       </section>
 
