@@ -40,19 +40,19 @@ export default async function AboutPage() {
       <section className="mb-32 grid grid-cols-1 items-start gap-12 md:grid-cols-12">
         <div className="md:col-span-4 md:sticky md:top-32">
           <p className="font-headline text-xl italic leading-relaxed text-on-surface-variant md:text-2xl">
-            致力于为技术、美学与日常生活保留一块安静、可长期书写的数字空间。
+            记录技术、项目与生活的个人博客。
           </p>
         </div>
 
         <div className="space-y-8 text-lg leading-loose tracking-tight text-on-surface/80 md:col-span-8">
           <p>
-            我创建 <span className="font-semibold text-zinc-900">{siteConfig.name}</span>，是想给自己留下一块不被平台节奏牵引的写作场域。这里记录技术观察、设计笔记、生活感受，也保留一些还未完全定型的想法。
+            你好，我是 <span className="font-semibold text-zinc-900">{siteConfig.authorName}</span>。这是我的个人博客，主要用来记录平时的学习笔记、项目经历和一些生活随想。
           </p>
           <p>
-            我相信内容不必永远追逐更快的分发速度。很多真正重要的东西需要时间沉淀，需要反复重写、重新命名、重新理解。博客对我来说，更像一个可被持续整理的长期档案，而不是一次性消费的流量载体。
+            平时对技术和量化方向比较感兴趣，也会写一些关于个人成长和日常生活的内容。这里没有固定的更新频率，写到什么就发什么。
           </p>
           <p>
-            通过这份个人站点，我希望把研究与感受、分析与审美、技术与生活重新放回同一张桌面上，慢慢地、稳定地写下去。
+            如果你对这里的内容感兴趣，欢迎留言交流。
           </p>
         </div>
       </section>

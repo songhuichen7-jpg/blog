@@ -128,16 +128,14 @@ export default async function PostPage({ params }: PostPageProps) {
             <MarkdownRenderer content={post.content} dropcap />
 
             <section className="mt-24 flex flex-col items-center gap-8 rounded-xl bg-surface-container-low p-12 text-center md:flex-row md:items-start md:text-left">
-              <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-surface-container-highest grayscale">
-                {post.authorAvatar && (
-                  <Image
-                    src={post.authorAvatar}
-                    alt={post.authorName}
-                    fill
-                    sizes="96px"
-                    className="object-cover"
-                  />
-                )}
+              <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-surface-container-highest">
+                <Image
+                  src="/logo.png"
+                  alt={post.authorName}
+                  fill
+                  sizes="96px"
+                  className="object-cover"
+                />
               </div>
               <div className="space-y-4">
                 <h4 className="font-headline text-xl font-bold">{post.authorName}</h4>
