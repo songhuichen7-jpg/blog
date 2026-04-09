@@ -77,7 +77,7 @@ export async function createSession(email: string) {
   cookieStore.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_SITE_URL?.startsWith("http://"),
     path: "/",
     maxAge: SESSION_TTL_SECONDS,
   });
