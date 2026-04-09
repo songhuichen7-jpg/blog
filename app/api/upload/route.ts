@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/auth";
 
-const UPLOAD_DIR = path.join("/tmp", "uploads");
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join("/tmp", "uploads");
 
 export async function POST(request: Request) {
   const session = await getSession();

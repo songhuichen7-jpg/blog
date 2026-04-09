@@ -3,7 +3,7 @@
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 
 import { MaterialIcon } from "@/components/material-icon";
@@ -17,60 +17,26 @@ const navItems: Array<{ href: Route; label: string }> = [
 export function SiteHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   return (
     <nav className="fixed top-0 z-50 w-full bg-white/80 backdrop-blur-xl shadow-ambient">
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-6 md:px-8">
-        <div className="relative" ref={menuRef}>
-          <button
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label="菜单"
-            className="block overflow-hidden rounded-full transition-opacity hover:opacity-70 focus:outline-none"
-          >
-            <Image
-              src="/logo.png"
-              alt="Logo"
-              width={36}
-              height={36}
-              className="rounded-full object-cover"
-            />
-          </button>
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5 md:px-8">
+        {/* Logo + 博客名 */}
+        <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-70">
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={32}
+            height={32}
+            className="rounded-full object-cover"
+          />
+          <span className="font-headline text-lg tracking-tight text-zinc-800">The Curator</span>
+        </Link>
 
-          {menuOpen && (
-            <div className="absolute left-0 top-full mt-2 w-36 overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/5">
-              <Link
-                href="/"
-                onClick={() => setMenuOpen(false)}
-                className="block px-4 py-3 text-sm text-zinc-700 hover:bg-zinc-50"
-              >
-                首页
-              </Link>
-              <Link
-                href="/editor"
-                onClick={() => setMenuOpen(false)}
-                className="block px-4 py-3 text-sm text-zinc-700 hover:bg-zinc-50"
-              >
-                写作后台
-              </Link>
-            </div>
-          )}
-        </div>
-
-        <div className="hidden items-center space-x-12 md:flex">
+        {/* 桌面端导航 */}
+        <div className="hidden items-center space-x-10 md:flex">
           {navItems.map((item) => {
             const active = pathname === item.href;
-
             return (
               <Link
                 key={item.href}
@@ -88,7 +54,8 @@ export function SiteHeader() {
           })}
         </div>
 
-        <div className="flex items-center gap-5">
+        {/* 右侧：搜索 + 移动端菜单按钮 */}
+        <div className="flex items-center gap-2">
           <Link
             href="/search"
             aria-label="搜索文章"
@@ -96,8 +63,39 @@ export function SiteHeader() {
           >
             <MaterialIcon icon="search" />
           </Link>
+
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={menuOpen ? "关闭菜单" : "打开菜单"}
+            className="rounded-full p-2 text-on-surface-variant hover:text-primary md:hidden"
+          >
+            <MaterialIcon icon={menuOpen ? "close" : "menu"} />
+          </button>
         </div>
       </div>
+
+      {/* 移动端下拉菜单 */}
+      {menuOpen && (
+        <div className="border-t border-outline-variant/10 bg-white/95 backdrop-blur-xl md:hidden">
+          <div className="mx-auto max-w-7xl px-6 py-4">
+            {navItems.map((item) => {
+              const active = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                  className={`block py-3 text-sm ${
+                    active ? "font-semibold text-zinc-900" : "text-zinc-600"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

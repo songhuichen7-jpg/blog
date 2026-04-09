@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { MarkdownRenderer } from "@/components/markdown-renderer";
+import { ShareButtons } from "@/components/share-buttons";
 import { getPostBySlug } from "@/lib/blog";
 import { getSession } from "@/lib/auth";
 import { formatChineseDate } from "@/lib/utils";
@@ -25,9 +26,26 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
     return {};
   }
 
+  const title = post.metaTitle || post.title;
+  const description = post.metaDescription || post.excerpt;
+
   return {
-    title: post.metaTitle || post.title,
-    description: post.metaDescription || post.excerpt,
+    title,
+    description,
+    openGraph: {
+      title,
+      description: description || undefined,
+      type: "article",
+      publishedTime: post.publishedAt?.toISOString(),
+      authors: [post.authorName],
+      ...(post.coverImage ? { images: [{ url: post.coverImage }] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: description || undefined,
+      ...(post.coverImage ? { images: [post.coverImage] } : {}),
+    },
   };
 }
 
@@ -39,6 +57,11 @@ export default async function PostPage({ params }: PostPageProps) {
   if (post.status !== "PUBLISHED" && !session) notFound();
 
   const showStandaloneQuote = Boolean(post.pullQuote) && !post.content.includes(">");
+
+  let relatedLinks: { label: string; url: string }[] = [];
+  try { relatedLinks = post.relatedLinks ? JSON.parse(post.relatedLinks) : []; } catch { relatedLinks = []; }
+
+  const hasRightSidebar = relatedLinks.length > 0;
 
   return (
     <>
@@ -67,65 +90,68 @@ export default async function PostPage({ params }: PostPageProps) {
       </header>
 
       <main className="mx-auto max-w-7xl px-8 pb-32">
-        <div className="mb-24 w-full overflow-hidden rounded-xl bg-surface-container">
-          <div className="relative aspect-[21/9]">
-            <PostImage
-              src={post.coverImage}
-              alt={post.coverAlt || post.title}
-              fill
-              sizes="100vw"
-              className="object-cover grayscale transition-all duration-700 hover:grayscale-0"
-            />
+        {post.coverImage && (
+          <div className="mb-24 w-full overflow-hidden rounded-xl bg-surface-container">
+            <div className="relative aspect-[16/9]">
+              <PostImage
+                src={post.coverImage}
+                alt={post.coverAlt || post.title}
+                fill
+                sizes="100vw"
+                className="object-cover transition-all duration-700 hover:scale-[1.01]"
+              />
+            </div>
           </div>
-        </div>
+        )}
 
-        <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
+        <div className={`grid grid-cols-1 gap-16 ${hasRightSidebar ? "lg:grid-cols-12" : "lg:grid-cols-10"}`}>
           <aside className="hidden lg:col-span-2 lg:block">
             <div className="sticky top-32 space-y-12">
               <div className="space-y-4">
                 <span className="block text-[10px] uppercase tracking-[0.2em] text-outline">分享</span>
-                <div className="flex flex-col gap-4">
-                  <Link href="/archive" className="text-on-surface-variant hover:text-primary">
-                    归档
-                  </Link>
-                  <Link href="/about" className="text-on-surface-variant hover:text-primary">
-                    关于作者
-                  </Link>
-                  <a
-                    href={`mailto:?subject=${encodeURIComponent(post.title)}`}
-                    className="text-on-surface-variant hover:text-primary"
-                  >
-                    邮件分享
-                  </a>
-                </div>
+                <ShareButtons title={post.title} slug={post.slug} />
               </div>
 
-              <div className="space-y-4">
-                <span className="block text-[10px] uppercase tracking-[0.2em] text-outline">话题</span>
-                <div className="flex flex-wrap gap-2">
-                  {post.tags.map(({ tag }) => (
-                    <span
-                      key={tag.id}
-                      className="border border-outline-variant/30 px-2 py-1 text-[10px] uppercase tracking-widest"
-                    >
-                      {tag.name}
-                    </span>
-                  ))}
+              {post.tags.length > 0 && (
+                <div className="space-y-4">
+                  <span className="block text-[10px] uppercase tracking-[0.2em] text-outline">话题</span>
+                  <div className="flex flex-wrap gap-2">
+                    {post.tags.map(({ tag }) => (
+                      <span
+                        key={tag.id}
+                        className="border border-outline-variant/30 px-2 py-1 text-[10px] uppercase tracking-widest"
+                      >
+                        {tag.name}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </aside>
 
-          <article className="space-y-12 lg:col-span-7">
+          <article className={`space-y-12 ${hasRightSidebar ? "lg:col-span-7" : "lg:col-span-8"}`}>
             {showStandaloneQuote ? (
               <blockquote className="group border-y border-outline-variant/10 py-12">
                 <p className="mx-auto max-w-2xl text-center font-headline text-3xl italic leading-tight text-primary transition-transform duration-500 group-hover:scale-[1.01] md:text-4xl">
-                  “{post.pullQuote}”
+                  &ldquo;{post.pullQuote}&rdquo;
                 </p>
               </blockquote>
             ) : null}
 
             <MarkdownRenderer content={post.content} dropcap />
+
+            {/* 移动端分享和标签 */}
+            <div className="flex flex-wrap items-center gap-4 border-t border-outline-variant/10 pt-8 lg:hidden">
+              {post.tags.map(({ tag }) => (
+                <span
+                  key={tag.id}
+                  className="border border-outline-variant/30 px-2 py-1 text-[10px] uppercase tracking-widest"
+                >
+                  {tag.name}
+                </span>
+              ))}
+            </div>
 
             <section className="mt-24 flex flex-col items-center gap-8 rounded-xl bg-surface-container-low p-12 text-center md:flex-row md:items-start md:text-left">
               <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-surface-container-highest">
@@ -152,31 +178,27 @@ export default async function PostPage({ params }: PostPageProps) {
             </section>
           </article>
 
-          <aside className="space-y-16 lg:col-span-3">
-            {(() => {
-              let links: { label: string; url: string }[] = [];
-              try { links = post.relatedLinks ? JSON.parse(post.relatedLinks) : []; } catch { links = []; }
-              return links.length > 0 ? (
-                <div className="space-y-4">
-                  <h5 className="border-b border-outline-variant/10 pb-4 text-[10px] uppercase tracking-[0.2em] text-outline">
-                    相关链接
-                  </h5>
-                  {links.map((link, i) => (
-                    <a
-                      key={i}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex items-start gap-2 text-sm text-on-surface-variant hover:text-primary"
-                    >
-                      <span className="mt-0.5 shrink-0 text-outline">→</span>
-                      <span className="group-hover:underline group-hover:underline-offset-4">{link.label || link.url}</span>
-                    </a>
-                  ))}
-                </div>
-              ) : null;
-            })()}
-          </aside>
+          {hasRightSidebar && (
+            <aside className="space-y-16 lg:col-span-3">
+              <div className="space-y-4">
+                <h5 className="border-b border-outline-variant/10 pb-4 text-[10px] uppercase tracking-[0.2em] text-outline">
+                  相关链接
+                </h5>
+                {relatedLinks.map((link, i) => (
+                  <a
+                    key={i}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-start gap-2 text-sm text-on-surface-variant hover:text-primary"
+                  >
+                    <span className="mt-0.5 shrink-0 text-outline">→</span>
+                    <span className="group-hover:underline group-hover:underline-offset-4">{link.label || link.url}</span>
+                  </a>
+                ))}
+              </div>
+            </aside>
+          )}
         </div>
       </main>
     </>

@@ -76,10 +76,10 @@ const config: Config = {
           css: {
             color: "#5c605d",
             maxWidth: "none",
-            lineHeight: "1.9",
+            lineHeight: "1.75",
             p: {
               marginTop: "0",
-              marginBottom: "1.75rem",
+              marginBottom: "1.5rem",
             },
             a: {
               color: "#5f5e5e",
@@ -105,17 +105,16 @@ const config: Config = {
               fontWeight: "700",
             },
             blockquote: {
-              borderLeftWidth: "0",
+              borderLeftWidth: "3px",
+              borderLeftColor: "#afb3b0",
               fontFamily: "var(--font-noto-serif), var(--font-noto-serif-sc), serif",
               fontStyle: "italic",
-              fontSize: "1.5rem",
-              lineHeight: "1.5",
+              fontSize: "1.15rem",
+              lineHeight: "1.6",
               color: "#5f5e5e",
-              paddingTop: "2rem",
-              paddingBottom: "2rem",
-              borderTop: "1px solid rgba(175, 179, 176, 0.15)",
-              borderBottom: "1px solid rgba(175, 179, 176, 0.15)",
-              textAlign: "center",
+              paddingTop: "0.5rem",
+              paddingBottom: "0.5rem",
+              paddingLeft: "1.5rem",
             },
             img: {
               borderRadius: "0.75rem",

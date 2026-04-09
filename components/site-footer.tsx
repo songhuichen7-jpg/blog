@@ -25,10 +25,10 @@ export function SiteFooter() {
             归档
           </Link>
           <Link
-            href="/editor"
+            href="/feed.xml"
             className="text-sm tracking-wide text-zinc-500 transition-all hover:underline hover:underline-offset-4"
           >
-            编辑后台
+            RSS
           </Link>
         </div>
       </div>

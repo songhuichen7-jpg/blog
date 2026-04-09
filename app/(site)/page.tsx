@@ -10,6 +10,64 @@ type HomePageProps = {
   searchParams: Promise<{ category?: string }>;
 };
 
+type PostCard = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  coverImage: string | null;
+  coverAlt: string | null;
+  publishedAt: Date | null;
+  readTimeMinutes: number | null;
+  category: { name: string };
+};
+
+function PostCardImage({ post, sizes, aspectClass = "aspect-[3/2]" }: { post: PostCard; sizes: string; aspectClass?: string }) {
+  return (
+    <div className={`relative ${aspectClass} overflow-hidden rounded-lg bg-surface-container-low transition-colors duration-300 group-hover:bg-surface-container-high`}>
+      {post.coverImage ? (
+        <PostImage
+          src={post.coverImage}
+          alt={post.coverAlt || post.title}
+          fill
+          sizes={sizes}
+          className="object-cover transition-all duration-500 group-hover:scale-[1.02]"
+        />
+      ) : (
+        <div className="flex h-full items-center justify-center bg-surface-container">
+          <span className="font-headline text-4xl text-outline-variant/30">{post.title.charAt(0)}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PostCardMeta({ post, showReadTime = true }: { post: PostCard; showReadTime?: boolean }) {
+  return (
+    <>
+      <div className="mb-3 flex items-center gap-3">
+        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">
+          {post.category.name}
+        </span>
+        {showReadTime && (
+          <span className="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/60">
+            {post.readTimeMinutes ?? 5} 分钟阅读
+          </span>
+        )}
+      </div>
+      <h3 className="balanced-text mb-3 font-headline text-xl leading-snug text-zinc-900 md:text-2xl">
+        {post.title}
+      </h3>
+      <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-on-surface-variant">
+        {post.excerpt}
+      </p>
+      <div className="text-[10px] uppercase tracking-widest text-on-surface-variant">
+        {post.publishedAt ? formatChineseDate(post.publishedAt) : "草稿"}
+      </div>
+    </>
+  );
+}
+
 export default async function HomePage({ searchParams }: HomePageProps) {
   const { category } = await searchParams;
   const { featured, latestPosts, categoryCounts } = await getHomePageData(category);
@@ -29,16 +87,22 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
             <Link
               href={`/posts/${featured.slug}`}
-              className="group relative overflow-hidden lg:col-span-7"
+              className="group relative overflow-hidden rounded-lg lg:col-span-7"
             >
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-container">
-                <PostImage
-                  src={featured.coverImage}
-                  alt={featured.coverAlt || featured.title}
-                  fill
-                  sizes="(min-width: 1024px) 60vw, 100vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
+                {featured.coverImage ? (
+                  <PostImage
+                    src={featured.coverImage}
+                    alt={featured.coverAlt || featured.title}
+                    fill
+                    sizes="(min-width: 1024px) 60vw, 100vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center">
+                    <span className="font-headline text-6xl text-outline-variant/20">{featured.title.charAt(0)}</span>
+                  </div>
+                )}
               </div>
             </Link>
 
@@ -130,72 +194,29 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           </p>
         ) : (
           <>
-            <div className="grid grid-cols-1 gap-x-8 gap-y-20 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
               {leadPosts.map((post) => (
                 <article key={post.id} className="group">
                   <Link href={`/posts/${post.slug}`} className="block">
-                    <div className="relative mb-8 aspect-[3/4] overflow-hidden bg-surface-container-low transition-colors duration-300 group-hover:bg-surface-container-high">
-                      <PostImage
-                        src={post.coverImage}
-                        alt={post.coverAlt || post.title}
-                        fill
-                        sizes="(min-width: 1024px) 30vw, (min-width: 768px) 50vw, 100vw"
-                        className="object-cover opacity-90 transition-all duration-500 group-hover:scale-[1.02] group-hover:opacity-100"
-                      />
-                    </div>
-                    <div className="px-2">
-                      <div className="mb-4 flex items-center gap-3">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">
-                          {post.category.name}
-                        </span>
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/60">
-                          {post.readTimeMinutes ?? 5} 分钟阅读
-                        </span>
-                      </div>
-                      <h3 className="balanced-text mb-4 font-headline text-2xl leading-snug text-zinc-900">
-                        {post.title}
-                      </h3>
-                      <p className="mb-6 line-clamp-2 text-sm leading-relaxed text-on-surface-variant">
-                        {post.excerpt}
-                      </p>
-                      <div className="text-[10px] uppercase tracking-widest text-on-surface-variant">
-                        {post.publishedAt ? formatChineseDate(post.publishedAt) : "草稿"}
-                      </div>
+                    <PostCardImage post={post} sizes="(min-width: 1024px) 30vw, (min-width: 768px) 50vw, 100vw" />
+                    <div className="mt-4">
+                      <PostCardMeta post={post} />
                     </div>
                   </Link>
                 </article>
               ))}
 
               {widePost && (
-                <article className="group md:col-span-2" key={widePost.id}>
+                <article className="group md:col-span-2 lg:col-span-3" key={widePost.id}>
                   <Link
                     href={`/posts/${widePost.slug}`}
                     className="grid grid-cols-1 items-center gap-8 md:grid-cols-12"
                   >
-                    <div className="relative aspect-video overflow-hidden bg-surface-container-low transition-colors duration-300 group-hover:bg-surface-container-high md:col-span-8">
-                      <PostImage
-                        src={widePost.coverImage}
-                        alt={widePost.coverAlt || widePost.title}
-                        fill
-                        sizes="(min-width: 768px) 60vw, 100vw"
-                        className="object-cover opacity-90 transition-all duration-500 group-hover:scale-[1.01] group-hover:opacity-100"
-                      />
+                    <div className="md:col-span-7">
+                      <PostCardImage post={widePost} sizes="(min-width: 768px) 60vw, 100vw" aspectClass="aspect-[16/9]" />
                     </div>
-                    <div className="px-2 md:col-span-4">
-                      <div className="mb-4 flex items-center gap-3">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">
-                          {widePost.category.name}
-                        </span>
-                      </div>
-                      <h3 className="balanced-text mb-4 font-headline text-2xl leading-snug text-zinc-900">
-                        {widePost.title}
-                      </h3>
-                      <p className="mb-6 text-sm leading-relaxed text-on-surface-variant">
-                        {widePost.excerpt}
-                      </p>
-                      <div className="text-[10px] uppercase tracking-widest text-on-surface-variant">
-                        {widePost.publishedAt ? formatChineseDate(widePost.publishedAt) : "草稿"}
-                      </div>
+                    <div className="md:col-span-5">
+                      <PostCardMeta post={widePost} showReadTime={false} />
                     </div>
                   </Link>
                 </article>
@@ -204,69 +225,20 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               {finalPost && (
                 <article key={finalPost.id} className="group">
                   <Link href={`/posts/${finalPost.slug}`} className="block">
-                    <div className="relative mb-8 aspect-[3/4] overflow-hidden bg-surface-container-low transition-colors duration-300 group-hover:bg-surface-container-high">
-                      <PostImage
-                        src={finalPost.coverImage}
-                        alt={finalPost.coverAlt || finalPost.title}
-                        fill
-                        sizes="(min-width: 1024px) 30vw, (min-width: 768px) 50vw, 100vw"
-                        className="object-cover opacity-90 transition-all duration-500 group-hover:scale-[1.02] group-hover:opacity-100"
-                      />
-                    </div>
-                    <div className="px-2">
-                      <div className="mb-4 flex items-center gap-3">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">
-                          {finalPost.category.name}
-                        </span>
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/60">
-                          {finalPost.readTimeMinutes ?? 5} 分钟阅读
-                        </span>
-                      </div>
-                      <h3 className="balanced-text mb-4 font-headline text-2xl leading-snug text-zinc-900">
-                        {finalPost.title}
-                      </h3>
-                      <p className="mb-6 line-clamp-2 text-sm leading-relaxed text-on-surface-variant">
-                        {finalPost.excerpt}
-                      </p>
-                      <div className="text-[10px] uppercase tracking-widest text-on-surface-variant">
-                        {finalPost.publishedAt ? formatChineseDate(finalPost.publishedAt) : "草稿"}
-                      </div>
+                    <PostCardImage post={finalPost} sizes="(min-width: 1024px) 30vw, (min-width: 768px) 50vw, 100vw" />
+                    <div className="mt-4">
+                      <PostCardMeta post={finalPost} />
                     </div>
                   </Link>
                 </article>
               )}
 
-              {/* 分类过滤时多出来的文章继续用普通卡片展示 */}
               {extraPosts.map((post) => (
                 <article key={post.id} className="group">
                   <Link href={`/posts/${post.slug}`} className="block">
-                    <div className="relative mb-8 aspect-[3/4] overflow-hidden bg-surface-container-low transition-colors duration-300 group-hover:bg-surface-container-high">
-                      <PostImage
-                        src={post.coverImage}
-                        alt={post.coverAlt || post.title}
-                        fill
-                        sizes="(min-width: 1024px) 30vw, (min-width: 768px) 50vw, 100vw"
-                        className="object-cover opacity-90 transition-all duration-500 group-hover:scale-[1.02] group-hover:opacity-100"
-                      />
-                    </div>
-                    <div className="px-2">
-                      <div className="mb-4 flex items-center gap-3">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">
-                          {post.category.name}
-                        </span>
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant/60">
-                          {post.readTimeMinutes ?? 5} 分钟阅读
-                        </span>
-                      </div>
-                      <h3 className="balanced-text mb-4 font-headline text-2xl leading-snug text-zinc-900">
-                        {post.title}
-                      </h3>
-                      <p className="mb-6 line-clamp-2 text-sm leading-relaxed text-on-surface-variant">
-                        {post.excerpt}
-                      </p>
-                      <div className="text-[10px] uppercase tracking-widest text-on-surface-variant">
-                        {post.publishedAt ? formatChineseDate(post.publishedAt) : "草稿"}
-                      </div>
+                    <PostCardImage post={post} sizes="(min-width: 1024px) 30vw, (min-width: 768px) 50vw, 100vw" />
+                    <div className="mt-4">
+                      <PostCardMeta post={post} />
                     </div>
                   </Link>
                 </article>
