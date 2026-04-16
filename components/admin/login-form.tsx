@@ -46,10 +46,7 @@ export function LoginForm() {
   return (
     <form className="space-y-5" onSubmit={onSubmit}>
       <div className="space-y-2">
-        <label
-          htmlFor="login-email"
-          className="block text-xs font-bold uppercase tracking-[0.2em] text-outline"
-        >
+        <label htmlFor="login-email" className="block text-xs font-medium text-muted">
           管理员邮箱
         </label>
         <input
@@ -59,16 +56,13 @@ export function LoginForm() {
           autoComplete="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="w-full rounded-md border border-outline-variant/20 bg-surface-container-low px-4 py-4 text-sm focus:border-outline focus:ring-0"
+          className="w-full rounded-md border border-border bg-white px-4 py-3 text-sm focus:border-accent focus:ring-1 focus:ring-accent/20"
           placeholder="admin@example.com"
         />
       </div>
 
       <div className="space-y-2">
-        <label
-          htmlFor="login-password"
-          className="block text-xs font-bold uppercase tracking-[0.2em] text-outline"
-        >
+        <label htmlFor="login-password" className="block text-xs font-medium text-muted">
           密码
         </label>
         <input
@@ -78,7 +72,7 @@ export function LoginForm() {
           autoComplete="current-password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="w-full rounded-md border border-outline-variant/20 bg-surface-container-low px-4 py-4 text-sm focus:border-outline focus:ring-0"
+          className="w-full rounded-md border border-border bg-white px-4 py-3 text-sm focus:border-accent focus:ring-1 focus:ring-accent/20"
           placeholder="请输入密码"
         />
       </div>
@@ -86,13 +80,13 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="w-full rounded-md bg-primary px-8 py-4 text-sm font-bold uppercase tracking-[0.24em] text-on-primary hover:bg-primary-dim disabled:cursor-not-allowed disabled:opacity-70"
+        className="w-full rounded-md bg-primary px-8 py-3 text-sm font-medium text-white hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
       >
         {isPending ? "登录中" : "进入后台"}
       </button>
 
       {message ? (
-        <p aria-live="polite" className="text-sm text-error">
+        <p aria-live="polite" className="text-sm text-red-600">
           {message}
         </p>
       ) : null}

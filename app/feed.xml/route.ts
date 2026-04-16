@@ -52,9 +52,9 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>The Curator</title>
+    <title>Veko's Blog</title>
     <link>${baseUrl}</link>
-    <description>个人研究与写作档案</description>
+    <description>个人博客 — 技术探索、项目思考和生活记录。</description>
     <language>zh-CN</language>
     <atom:link href="${baseUrl}/feed.xml" rel="self" type="application/rss+xml" />
 ${items}

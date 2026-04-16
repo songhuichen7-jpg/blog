@@ -1,11 +1,12 @@
 "use client";
 
 import type { Category, Post } from "@prisma/client";
-import { FormEvent, useRef, useMemo, useState, useTransition } from "react";
+import { FormEvent, useRef, useState, useMemo, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 import type { PostCard } from "@/lib/blog";
+import { TiptapEditor } from "./tiptap/tiptap-editor";
 
 type PostItem = Pick<Post, "id" | "slug" | "title" | "status" | "updatedAt" | "publishedAt"> & {
   category: Pick<Category, "name">;
@@ -20,23 +21,6 @@ type EditorFormProps = {
 
 const defaultCover =
   "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=1400&q=80";
-
-function parseFrontmatter(raw: string): {
-  title: string;
-  excerpt: string;
-  content: string;
-} {
-  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
-  if (!match) return { title: "", excerpt: "", content: raw.trim() };
-
-  const fm = match[1];
-  const body = match[2].trim();
-  const get = (key: string) => {
-    const line = fm.match(new RegExp(`^${key}:\\s*(.+)$`, "m"));
-    return line ? line[1].trim().replace(/^["']|["']$/g, "") : "";
-  };
-  return { title: get("title"), excerpt: get("excerpt"), content: body };
-}
 
 export function EditorForm({ categories, recentPosts, drafts, editPost }: EditorFormProps) {
   const isEditMode = Boolean(editPost);
@@ -57,12 +41,6 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
     }
   );
   const [featured, setFeatured] = useState(editPost?.featured ?? false);
-  const [publishedAt, setPublishedAt] = useState<string>(() => {
-    if (editPost?.publishedAt) {
-      return new Date(editPost.publishedAt).toISOString().slice(0, 16);
-    }
-    return "";
-  });
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [savedSlug, setSavedSlug] = useState(editPost?.slug ?? "");
@@ -71,7 +49,6 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
   const [draftList, setDraftList] = useState<PostItem[]>(drafts);
 
   const coverFileRef = useRef<HTMLInputElement>(null);
-  const mdFileRef = useRef<HTMLInputElement>(null);
 
   const parsedTags = useMemo(
     () => tags.split(",").map((t) => t.trim()).filter(Boolean),
@@ -104,16 +81,13 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
     }
   }
 
-  function handleMarkdownImport(file: File) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const raw = e.target?.result as string;
-      const parsed = parseFrontmatter(raw);
-      if (parsed.title) setTitle(parsed.title);
-      if (parsed.excerpt) setExcerpt(parsed.excerpt);
-      setContent(parsed.content);
-    };
-    reader.readAsText(file);
+  async function handleEditorImageUpload(file: File): Promise<string> {
+    const form = new FormData();
+    form.append("file", file);
+    const res = await fetch("/api/upload", { method: "POST", body: form });
+    const data = (await res.json()) as { url?: string; message?: string };
+    if (!res.ok) throw new Error(data.message || "上传失败");
+    return data.url!;
   }
 
   function validate(): string | null {
@@ -158,7 +132,6 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
             metaDescription: "",
             featured,
             status: intent,
-            publishedAt: publishedAt || undefined,
           }),
         });
 
@@ -175,9 +148,9 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
         setIsError(false);
 
         if (isEditMode) {
-          setMessage(intent === "PUBLISHED" ? "✓ 文章已更新。" : "✓ 草稿已保存。");
+          setMessage(intent === "PUBLISHED" ? "文章已更新。" : "草稿已保存。");
         } else {
-          setMessage(intent === "PUBLISHED" ? "✓ 文章已发布。" : "✓ 草稿已保存。");
+          setMessage(intent === "PUBLISHED" ? "文章已发布。" : "草稿已保存。");
           setTitle("");
           setExcerpt("");
           setContent("");
@@ -227,8 +200,8 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
   }
 
   return (
-    <form onSubmit={handleSubmit} className="min-h-screen bg-background text-on-surface">
-      {/* 隐藏文件输入 */}
+    <form onSubmit={handleSubmit} className="min-h-screen bg-[#FAFAFA] text-foreground">
+      {/* Hidden file input for cover */}
       <input
         ref={coverFileRef}
         type="file"
@@ -240,51 +213,32 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
           e.target.value = "";
         }}
       />
-      <input
-        ref={mdFileRef}
-        type="file"
-        accept=".md,.markdown,.txt"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) handleMarkdownImport(file);
-          e.target.value = "";
-        }}
-      />
 
-      {/* 顶部导航 */}
-      <header className="fixed top-0 z-50 w-full bg-background/80 shadow-ambient backdrop-blur-xl">
-        <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-8 py-5">
-          <div className="flex items-center gap-8">
-            <span className="font-headline text-xl italic text-on-surface">写作后台</span>
-            <nav className="hidden items-center gap-6 text-sm text-on-surface-variant md:flex">
-              <Link href="/" className="hover:text-on-surface">首页</Link>
-              <Link href="/archive" className="hover:text-on-surface">归档</Link>
+      {/* Top bar */}
+      <header className="fixed top-0 z-50 w-full border-b border-border bg-white/90 backdrop-blur-sm">
+        <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-6 py-3">
+          <div className="flex items-center gap-6">
+            <span className="text-base font-semibold text-foreground">写作后台</span>
+            <nav className="hidden items-center gap-4 text-sm text-muted md:flex">
+              <Link href="/" className="hover:text-foreground">首页</Link>
+              <Link href="/archive" className="hover:text-foreground">归档</Link>
             </nav>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => mdFileRef.current?.click()}
-              disabled={isPending}
-              className="hidden rounded-md border border-outline-variant/20 px-4 py-2 text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:bg-surface-container-low disabled:opacity-50 md:inline-flex"
-            >
-              导入 .md
-            </button>
-            {savedSlug ? (
+          <div className="flex items-center gap-2">
+            {savedSlug && (
               <Link
                 href={`/posts/${savedSlug}`}
                 target="_blank"
-                className="hidden rounded-md border border-outline-variant/20 px-4 py-2 text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:text-on-surface md:inline-flex"
+                className="hidden rounded-md border border-border px-3 py-1.5 text-xs font-medium text-muted hover:text-foreground md:inline-flex"
               >
                 查看文章
               </Link>
-            ) : null}
+            )}
             {isEditMode && (
               <Link
                 href="/editor/posts"
-                className="hidden rounded-md border border-outline-variant/20 px-4 py-2 text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:text-on-surface md:inline-flex"
+                className="hidden rounded-md border border-border px-3 py-1.5 text-xs font-medium text-muted hover:text-foreground md:inline-flex"
               >
                 文章管理
               </Link>
@@ -293,14 +247,14 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
               type="button"
               onClick={() => submit("DRAFT")}
               disabled={isPending}
-              className="rounded-md border border-outline-variant/20 px-4 py-2 text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:bg-surface-container-low disabled:opacity-50"
+              className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-muted hover:text-foreground disabled:opacity-50"
             >
               存草稿
             </button>
             <button
               type="submit"
               disabled={isPending || isUploading}
-              className="rounded-md bg-primary px-5 py-2 text-xs font-bold uppercase tracking-widest text-on-primary hover:bg-primary-dim disabled:opacity-50"
+              className="rounded-md bg-primary px-4 py-1.5 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-50"
             >
               {isPending ? "保存中…" : isEditMode ? "更新文章" : "发布文章"}
             </button>
@@ -308,40 +262,36 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
         </div>
       </header>
 
-      {/* 左侧边栏 */}
-      <aside className="fixed left-0 top-0 z-40 hidden h-full w-60 border-r border-outline-variant/15 bg-background md:block">
-        <div className="flex h-screen flex-col pb-8 pt-24">
-          <div className="mb-6 px-6">
-            <p className="text-xs font-bold uppercase tracking-wide text-primary">编辑器</p>
-            <p className="mt-1 text-[10px] text-outline">写作模式</p>
+      {/* Left sidebar */}
+      <aside className="fixed left-0 top-0 z-40 hidden h-full w-56 border-r border-border bg-white md:block">
+        <div className="flex h-screen flex-col pb-6 pt-20">
+          <div className="mb-4 px-5">
+            <p className="text-xs font-semibold text-accent">编辑器</p>
           </div>
 
-          <nav className="flex-1 space-y-1 px-4">
+          <nav className="flex-1 space-y-0.5 px-3">
             {isEditMode ? (
-              <Link href="/editor" className="block rounded-md px-4 py-2.5 text-sm text-outline hover:bg-surface-container-low">
+              <Link href="/editor" className="block rounded-md px-3 py-2 text-sm text-muted hover:bg-zinc-50 hover:text-foreground">
                 新建文章
               </Link>
             ) : (
-              <div className="rounded-md bg-surface-container px-4 py-2.5 text-sm font-bold text-on-surface">
+              <div className="rounded-md bg-zinc-100 px-3 py-2 text-sm font-medium text-foreground">
                 新建文章
               </div>
             )}
-            <Link href="/editor/posts" className="block rounded-md px-4 py-2.5 text-sm text-outline hover:bg-surface-container-low">
+            <Link href="/editor/posts" className="block rounded-md px-3 py-2 text-sm text-muted hover:bg-zinc-50 hover:text-foreground">
               文章管理
             </Link>
-            <Link href="/archive" className="block rounded-md px-4 py-2.5 text-sm text-outline hover:bg-surface-container-low">
-              归档页
-            </Link>
-            <Link href="/" className="block rounded-md px-4 py-2.5 text-sm text-outline hover:bg-surface-container-low">
+            <Link href="/" className="block rounded-md px-3 py-2 text-sm text-muted hover:bg-zinc-50 hover:text-foreground">
               前台首页
             </Link>
           </nav>
 
-          <div className="px-5">
+          <div className="px-4">
             <button
               type="button"
               onClick={handleLogout}
-              className="w-full rounded-md border border-outline-variant/20 py-2.5 text-sm text-on-surface-variant hover:bg-surface-container-low"
+              className="w-full rounded-md border border-border py-2 text-sm text-muted hover:text-foreground"
             >
               退出登录
             </button>
@@ -349,87 +299,74 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
         </div>
       </aside>
 
-      {/* 主内容 */}
-      <main className="flex min-h-screen flex-col pt-20 md:ml-60 lg:flex-row lg:items-start">
-        <section className="min-w-0 flex-1 px-8 py-10 lg:px-12 lg:max-w-3xl">
-
-          {/* 提示信息（固定顶部，最醒目） */}
-          {message ? (
+      {/* Main content */}
+      <main className="flex min-h-screen flex-col pt-16 md:ml-56 lg:flex-row lg:items-start">
+        <section className="min-w-0 flex-1 px-6 py-8 lg:px-10 lg:max-w-3xl">
+          {/* Message */}
+          {message && (
             <div
-              className={`mb-6 rounded-lg px-5 py-4 text-sm font-medium ${
-                isError
-                  ? "bg-error/10 text-error"
-                  : "bg-secondary-container text-on-secondary-fixed"
+              className={`mb-6 rounded-lg px-4 py-3 text-sm font-medium ${
+                isError ? "bg-red-50 text-red-600" : "bg-accent/10 text-accent"
               }`}
               aria-live="polite"
             >
               {message}
             </div>
-          ) : null}
+          )}
 
-          <div className="mb-3 flex items-center gap-3">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-outline">新建文章</span>
-            <button
-              type="button"
-              onClick={() => mdFileRef.current?.click()}
-              className="rounded border border-outline-variant/30 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant hover:bg-surface-container-low md:hidden"
-            >
-              导入 .md
-            </button>
-          </div>
-
+          {/* Title */}
           <textarea
             rows={2}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="mb-6 w-full resize-none border-none bg-transparent font-headline text-4xl font-bold leading-tight text-on-surface placeholder:text-surface-variant focus:ring-0 md:text-5xl"
+            className="mb-4 w-full resize-none border-none bg-transparent text-3xl font-bold leading-tight text-foreground placeholder:text-zinc-300 focus:ring-0"
             placeholder="文章标题..."
           />
 
+          {/* Excerpt */}
           <div className="mb-6">
-            <label htmlFor="post-excerpt" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-outline">
+            <label htmlFor="post-excerpt" className="mb-1.5 block text-xs font-medium text-muted">
               摘要
             </label>
             <textarea
               id="post-excerpt"
-              rows={3}
+              rows={2}
               value={excerpt}
               onChange={(e) => setExcerpt(e.target.value)}
-              className="w-full resize-none rounded-lg border border-outline-variant/15 bg-surface-container-low px-4 py-3 text-base leading-relaxed text-on-surface-variant focus:border-outline focus:ring-0"
+              className="w-full resize-none rounded-lg border border-border bg-white px-3 py-2.5 text-sm leading-relaxed text-foreground placeholder:text-zinc-400 focus:border-accent focus:ring-1 focus:ring-accent/20"
               placeholder="一两句话概括核心观点..."
             />
           </div>
 
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="min-h-[560px] w-full resize-none border-none bg-transparent text-lg leading-relaxed text-on-surface-variant placeholder:text-surface-variant focus:ring-0"
-            placeholder="正文（支持 Markdown）..."
+          {/* Rich text editor */}
+          <TiptapEditor
+            content={content}
+            onChange={setContent}
+            onImageUpload={handleEditorImageUpload}
           />
         </section>
 
-        {/* 右侧面板 */}
-        <aside className="editorial-scrollbar w-full shrink-0 overflow-y-auto bg-surface-container px-7 py-10 lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)] lg:w-96">
+        {/* Right panel */}
+        <aside className="w-full shrink-0 overflow-y-auto border-l border-border bg-white px-6 py-8 lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:w-80">
           <div className="space-y-8">
-
-            {/* 分类与标签 */}
+            {/* Category & Tags */}
             <section>
-              <h3 className="mb-4 text-[10px] font-extrabold uppercase tracking-widest text-on-surface-variant">
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
                 基本信息
               </h3>
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="category" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-outline">
+                  <label htmlFor="category" className="mb-1 block text-xs font-medium text-muted">
                     分类
                   </label>
                   <select
                     id="category"
                     value={categoryId}
                     onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full rounded-md border-none bg-surface-container-lowest py-2.5 text-sm focus:ring-1 focus:ring-outline/20"
+                    className="w-full rounded-md border border-border bg-white py-2 text-sm focus:border-accent focus:ring-1 focus:ring-accent/20"
                   >
                     {categories.length === 0 && (
-                      <option value="">— 暂无分类，请先执行 db seed —</option>
+                      <option value="">暂无分类</option>
                     )}
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>{c.name}</option>
@@ -438,7 +375,7 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
                 </div>
 
                 <div>
-                  <label htmlFor="tags" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-outline">
+                  <label htmlFor="tags" className="mb-1 block text-xs font-medium text-muted">
                     标签（逗号分隔）
                   </label>
                   <input
@@ -446,13 +383,13 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
                     type="text"
                     value={tags}
                     onChange={(e) => setTags(e.target.value)}
-                    className="w-full border-x-0 border-b border-t-0 border-outline-variant/30 bg-transparent px-1 py-2 text-sm outline-none focus:border-outline"
+                    className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm focus:border-accent focus:ring-1 focus:ring-accent/20"
                     placeholder="如：学习笔记, 复盘, AI"
                   />
                   {parsedTags.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {parsedTags.map((tag) => (
-                        <span key={tag} className="rounded-full bg-secondary-fixed px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-on-secondary-fixed">
+                        <span key={tag} className="rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
                           {tag}
                         </span>
                       ))}
@@ -460,55 +397,33 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
                   )}
                 </div>
 
-                <div className="flex items-center justify-between rounded-lg bg-surface-container-low px-4 py-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-outline">置顶推荐</span>
+                <div className="flex items-center justify-between rounded-lg bg-zinc-50 px-4 py-3">
+                  <span className="text-xs font-medium text-muted">置顶推荐</span>
                   <button
                     type="button"
                     role="switch"
                     aria-checked={featured}
                     onClick={() => setFeatured((v) => !v)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${featured ? "bg-primary" : "bg-outline-variant/40"}`}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${featured ? "bg-accent" : "bg-zinc-300"}`}
                   >
-                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${featured ? "translate-x-6" : "translate-x-1"}`} />
+                    <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition ${featured ? "translate-x-4.5" : "translate-x-0.5"}`} />
                   </button>
-                </div>
-
-                <div>
-                  <label htmlFor="published-at" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-outline">
-                    发布日期（可修改）
-                  </label>
-                  <input
-                    id="published-at"
-                    type="datetime-local"
-                    value={publishedAt}
-                    onChange={(e) => setPublishedAt(e.target.value)}
-                    className="w-full rounded-md border border-outline-variant/20 bg-surface-container-lowest px-3 py-2.5 text-sm focus:border-outline focus:ring-0"
-                  />
-                  {publishedAt && (
-                    <button
-                      type="button"
-                      onClick={() => setPublishedAt("")}
-                      className="mt-1 text-[10px] text-outline hover:text-on-surface"
-                    >
-                      清除（使用当前时间）
-                    </button>
-                  )}
                 </div>
               </div>
             </section>
 
-            {/* 封面图 */}
+            {/* Cover image */}
             <section>
-              <h3 className="mb-4 text-[10px] font-extrabold uppercase tracking-widest text-on-surface-variant">
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
                 封面图
               </h3>
-              <div className="overflow-hidden rounded-lg bg-surface-container-high">
+              <div className="overflow-hidden rounded-lg bg-zinc-100">
                 <div className="relative aspect-[4/3]">
                   <Image
                     src={previewImage}
                     alt={coverAlt || title || "封面预览"}
                     fill
-                    sizes="352px"
+                    sizes="320px"
                     className="object-cover"
                     unoptimized={previewImage.startsWith("/")}
                   />
@@ -519,49 +434,44 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
                   type="button"
                   onClick={() => coverFileRef.current?.click()}
                   disabled={isUploading}
-                  className="w-full rounded-md border border-outline-variant/20 py-2.5 text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:bg-surface-container-low disabled:opacity-50"
+                  className="w-full rounded-md border border-border py-2 text-xs font-medium text-muted hover:text-foreground disabled:opacity-50"
                 >
                   {isUploading ? "上传中…" : "上传图片"}
                 </button>
-                <div className="flex items-center gap-2">
-                  <div className="h-px flex-1 bg-outline-variant/20" />
-                  <span className="text-[10px] text-outline">或填写链接</span>
-                  <div className="h-px flex-1 bg-outline-variant/20" />
-                </div>
                 <input
                   type="text"
                   value={coverImage}
                   onChange={(e) => setCoverImage(e.target.value)}
-                  className="w-full rounded-md border border-outline-variant/20 bg-surface-container-lowest px-3 py-2.5 text-sm focus:border-outline focus:ring-0"
-                  placeholder="https://..."
+                  className="w-full rounded-md border border-border bg-white px-3 py-2 text-xs focus:border-accent focus:ring-1 focus:ring-accent/20"
+                  placeholder="或粘贴图片链接..."
                 />
                 <input
                   type="text"
                   value={coverAlt}
                   onChange={(e) => setCoverAlt(e.target.value)}
-                  className="w-full rounded-md border border-outline-variant/20 bg-surface-container-lowest px-3 py-2.5 text-sm focus:border-outline focus:ring-0"
-                  placeholder="图片描述（alt 文本）"
+                  className="w-full rounded-md border border-border bg-white px-3 py-2 text-xs focus:border-accent focus:ring-1 focus:ring-accent/20"
+                  placeholder="图片描述（alt）"
                 />
               </div>
             </section>
 
-            {/* 引用语 */}
+            {/* Pull quote */}
             <section>
-              <h3 className="mb-4 text-[10px] font-extrabold uppercase tracking-widest text-on-surface-variant">
-                文章引用语（可选）
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
+                引用语（可选）
               </h3>
               <textarea
-                rows={3}
+                rows={2}
                 value={pullQuote}
                 onChange={(e) => setPullQuote(e.target.value)}
-                className="w-full resize-none rounded-md border border-outline-variant/20 bg-surface-container-lowest px-3 py-2.5 text-sm focus:border-outline focus:ring-0"
-                placeholder="文章中部大号引用句..."
+                className="w-full resize-none rounded-md border border-border bg-white px-3 py-2 text-sm focus:border-accent focus:ring-1 focus:ring-accent/20"
+                placeholder="文章引用句..."
               />
             </section>
 
-            {/* 相关链接 */}
+            {/* Related links */}
             <section>
-              <h3 className="mb-4 text-[10px] font-extrabold uppercase tracking-widest text-on-surface-variant">
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
                 相关链接（可选）
               </h3>
               <div className="space-y-2">
@@ -576,7 +486,7 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
                           next[i] = { ...next[i], label: e.target.value };
                           setRelatedLinks(next);
                         }}
-                        className="w-full rounded border border-outline-variant/20 bg-surface-container-lowest px-2 py-1.5 text-xs focus:border-outline focus:ring-0"
+                        className="w-full rounded border border-border bg-white px-2 py-1.5 text-xs focus:border-accent focus:ring-1 focus:ring-accent/20"
                         placeholder="链接标题"
                       />
                       <input
@@ -587,14 +497,14 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
                           next[i] = { ...next[i], url: e.target.value };
                           setRelatedLinks(next);
                         }}
-                        className="w-full rounded border border-outline-variant/20 bg-surface-container-lowest px-2 py-1.5 text-xs focus:border-outline focus:ring-0"
+                        className="w-full rounded border border-border bg-white px-2 py-1.5 text-xs focus:border-accent focus:ring-1 focus:ring-accent/20"
                         placeholder="https://..."
                       />
                     </div>
                     <button
                       type="button"
                       onClick={() => setRelatedLinks((prev) => prev.filter((_, j) => j !== i))}
-                      className="self-start rounded border border-error/30 px-2 py-1.5 text-[10px] text-error hover:bg-error/10"
+                      className="self-start rounded border border-red-200 px-2 py-1.5 text-xs text-red-600 hover:bg-red-50"
                     >
                       删除
                     </button>
@@ -604,7 +514,7 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
                   <button
                     type="button"
                     onClick={() => setRelatedLinks((prev) => [...prev, { label: "", url: "" }])}
-                    className="w-full rounded border border-dashed border-outline-variant/30 py-2 text-[10px] font-bold uppercase tracking-widest text-outline hover:bg-surface-container-low"
+                    className="w-full rounded border border-dashed border-border py-2 text-xs font-medium text-muted hover:bg-zinc-50"
                   >
                     + 添加链接
                   </button>
@@ -612,41 +522,38 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
               </div>
             </section>
 
-            {/* 草稿箱 */}
+            {/* Drafts */}
             <section>
-              <h3 className="mb-4 text-[10px] font-extrabold uppercase tracking-widest text-on-surface-variant">
-                草稿箱 {draftList.length > 0 && <span className="ml-1 rounded-full bg-secondary-fixed px-2 py-0.5 text-[10px] text-on-secondary-fixed">{draftList.length}</span>}
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
+                草稿箱 {draftList.length > 0 && <span className="ml-1 rounded-full bg-accent/10 px-2 py-0.5 text-xs text-accent">{draftList.length}</span>}
               </h3>
               {draftList.length === 0 ? (
-                <p className="text-xs text-outline">暂无草稿</p>
+                <p className="text-xs text-muted-foreground">暂无草稿</p>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {draftList.map((draft) => (
-                    <div key={draft.id} className="rounded-lg bg-surface-container-lowest p-3">
-                      <p className="text-[10px] uppercase tracking-wider text-outline">{draft.category.name}</p>
-                      <p className="mt-1 line-clamp-2 text-sm font-medium text-on-surface">{draft.title}</p>
-                      <p className="mt-1 text-[10px] text-outline">
-                        {new Date(draft.updatedAt).toLocaleDateString("zh-CN")}
-                      </p>
+                    <div key={draft.id} className="rounded-lg border border-border bg-white p-3">
+                      <p className="text-xs text-muted">{draft.category.name}</p>
+                      <p className="mt-1 line-clamp-2 text-sm font-medium text-foreground">{draft.title}</p>
                       <div className="mt-2 flex gap-2">
                         <button
                           type="button"
                           onClick={() => publishDraft(draft.id)}
-                          className="rounded bg-primary px-2.5 py-1 text-[10px] font-bold text-on-primary hover:bg-primary-dim"
+                          className="rounded bg-primary px-2.5 py-1 text-xs font-medium text-white hover:bg-primary/90"
                         >
                           发布
                         </button>
                         <Link
                           href={`/posts/${draft.slug}`}
                           target="_blank"
-                          className="rounded border border-outline-variant/30 px-2.5 py-1 text-[10px] text-on-surface-variant hover:bg-surface-container-low"
+                          className="rounded border border-border px-2.5 py-1 text-xs text-muted hover:text-foreground"
                         >
                           预览
                         </Link>
                         <button
                           type="button"
                           onClick={() => deleteDraft(draft.id)}
-                          className="rounded border border-error/30 px-2.5 py-1 text-[10px] text-error hover:bg-error/10"
+                          className="rounded border border-red-200 px-2.5 py-1 text-xs text-red-600 hover:bg-red-50"
                         >
                           删除
                         </button>
@@ -657,20 +564,17 @@ export function EditorForm({ categories, recentPosts, drafts, editPost }: Editor
               )}
             </section>
 
-            {/* 最近已发布 */}
+            {/* Recent published */}
             {recentPosts.length > 0 && (
               <section>
-                <h3 className="mb-4 text-[10px] font-extrabold uppercase tracking-widest text-on-surface-variant">
+                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">
                   最近发布
                 </h3>
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {recentPosts.map((post) => (
-                    <div key={post.id} className="rounded-lg bg-surface-container-lowest p-3">
-                      <p className="text-[10px] uppercase tracking-wider text-outline">{post.category.name}</p>
-                      <p className="mt-1 line-clamp-2 text-sm text-on-surface">{post.title}</p>
-                      <p className="mt-1 text-[10px] text-outline">
-                        {new Date(post.updatedAt).toLocaleDateString("zh-CN")}
-                      </p>
+                    <div key={post.id} className="rounded-lg border border-border bg-white p-3">
+                      <p className="text-xs text-muted">{post.category.name}</p>
+                      <p className="mt-1 line-clamp-2 text-sm text-foreground">{post.title}</p>
                     </div>
                   ))}
                 </div>

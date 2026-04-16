@@ -4,19 +4,19 @@ const prisma = new PrismaClient();
 
 const categories = [
   {
-    name: "思考",
-    slug: "thoughts",
-    description: "关于技术、学习与成长的个人观察和思考。",
+    name: "技术",
+    slug: "tech",
+    description: "算法、框架、性能优化等纯技术内容。",
   },
   {
     name: "项目",
     slug: "projects",
-    description: "个人项目的设计思路、决策过程与复盘总结。",
+    description: "项目实践、选型、复盘总结。",
   },
   {
-    name: "日常",
-    slug: "life",
-    description: "作为一个 CS 学生的日常、感受与随笔。",
+    name: "随笔",
+    slug: "essays",
+    description: "AI 感受、生活思考等非技术内容。",
   },
 ];
 

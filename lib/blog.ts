@@ -24,14 +24,15 @@ export async function getHomePageData(categorySlug?: string) {
     ...(categorySlug ? { category: { slug: categorySlug } } : {}),
   };
 
-  const [featured, latestPosts, categoryCounts] = await Promise.all([
+  const [featuredPosts, latestPosts, categoryCounts] = await Promise.all([
     !categorySlug
-      ? prisma.post.findFirst({
+      ? prisma.post.findMany({
           where: { status: PostStatus.PUBLISHED, featured: true },
           include: postCardInclude,
           orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+          take: 5,
         })
-      : Promise.resolve(null),
+      : Promise.resolve([]),
     prisma.post.findMany({
       where: baseWhere,
       include: postCardInclude,
@@ -48,11 +49,13 @@ export async function getHomePageData(categorySlug?: string) {
     }),
   ]);
 
+  const featuredIds = new Set(featuredPosts.map((p) => p.id));
+
   return {
-    featured: !categorySlug ? (featured ?? latestPosts[0] ?? null) : null,
+    featuredPosts: !categorySlug && featuredPosts.length > 0 ? featuredPosts : [],
     latestPosts:
-      !categorySlug && featured
-        ? latestPosts.filter((post) => post.id !== featured.id)
+      !categorySlug && featuredPosts.length > 0
+        ? latestPosts.filter((post) => !featuredIds.has(post.id))
         : latestPosts,
     categoryCounts,
   };

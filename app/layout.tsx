@@ -1,22 +1,11 @@
 import type { Metadata } from "next";
-import { Manrope, Noto_Serif, Noto_Serif_SC } from "next/font/google";
+import { Inter } from "next/font/google";
 
 import "./globals.css";
 
-const manrope = Manrope({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-manrope",
-});
-
-const notoSerif = Noto_Serif({
-  subsets: ["latin"],
-  variable: "--font-noto-serif",
-});
-
-const notoSerifSc = Noto_Serif_SC({
-  subsets: ["latin"],
-  variable: "--font-noto-serif-sc",
-  weight: ["400", "700"],
+  variable: "--font-inter",
 });
 
 function getMetadataBase() {
@@ -34,10 +23,10 @@ function getMetadataBase() {
 export const metadata: Metadata = {
   metadataBase: new URL(getMetadataBase()),
   title: {
-    default: "The Curator",
-    template: "%s | The Curator",
+    default: "Veko's Blog",
+    template: "%s | Veko's Blog",
   },
-  description: "一间以静谧编辑感呈现个人写作、研究与策展档案的数字博客。",
+  description: "个人博客 — 技术探索、项目思考和生活记录。",
   icons: {
     icon: "/icon.svg",
   },
@@ -51,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" className="scroll-smooth">
       <head>
-        <link rel="alternate" type="application/rss+xml" title="The Curator" href="/feed.xml" />
+        <link rel="alternate" type="application/rss+xml" title="Veko's Blog" href="/feed.xml" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
@@ -60,7 +49,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${manrope.variable} ${notoSerif.variable} ${notoSerifSc.variable} bg-background font-body text-on-surface selection:bg-secondary-container selection:text-on-surface antialiased`}
+        className={`${inter.variable} bg-[#FAFAFA] font-sans text-[#09090B] antialiased`}
       >
         {children}
       </body>

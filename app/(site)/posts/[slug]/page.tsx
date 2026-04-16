@@ -8,7 +8,6 @@ import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { ShareButtons } from "@/components/share-buttons";
 import { getPostBySlug } from "@/lib/blog";
 import { getSession } from "@/lib/auth";
-import { formatChineseDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +35,6 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
       title,
       description: description || undefined,
       type: "article",
-      publishedTime: post.publishedAt?.toISOString(),
       authors: [post.authorName],
       ...(post.coverImage ? { images: [{ url: post.coverImage }] } : {}),
     },
@@ -56,151 +54,122 @@ export default async function PostPage({ params }: PostPageProps) {
   if (!post) notFound();
   if (post.status !== "PUBLISHED" && !session) notFound();
 
-  const showStandaloneQuote = Boolean(post.pullQuote) && !post.content.includes(">");
-
   let relatedLinks: { label: string; url: string }[] = [];
   try { relatedLinks = post.relatedLinks ? JSON.parse(post.relatedLinks) : []; } catch { relatedLinks = []; }
 
   const hasRightSidebar = relatedLinks.length > 0;
 
   return (
-    <>
-      <header className="mx-auto max-w-5xl px-8 pb-16 pt-32 md:pt-48">
-        <div className="flex flex-col items-center space-y-6 text-center">
-          <span className="rounded-full bg-secondary-container px-3 py-1 text-xs uppercase tracking-[0.2em] text-on-surface-variant">
-            {post.category.name}
-          </span>
-          <h1 className="balanced-text max-w-4xl font-headline text-4xl font-bold leading-tight text-on-surface md:text-6xl">
-            {post.title}
-          </h1>
-          <p className="max-w-2xl text-lg font-light leading-relaxed text-on-surface-variant md:text-xl">
+    <article className="mx-auto max-w-3xl px-6 pb-20 pt-28">
+      {/* Header */}
+      <header className="mb-8">
+        <span className="mb-3 inline-block rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-accent">
+          {post.category.name}
+        </span>
+        <h1 className="balanced-text text-2xl font-bold leading-tight text-primary md:text-3xl">
+          {post.title}
+        </h1>
+        {post.excerpt && (
+          <p className="mt-3 text-base leading-relaxed text-muted">
             {post.excerpt}
           </p>
-          <div className="flex w-full items-center justify-center gap-4 border-t border-outline-variant/15 pt-8">
-            <div className="flex flex-col items-center">
-              <span className="text-xs font-semibold uppercase tracking-widest text-on-surface">
-                {post.authorName}
-              </span>
-              <span className="text-[10px] uppercase tracking-widest text-on-surface-variant">
-                {post.publishedAt ? formatChineseDate(post.publishedAt) : "草稿"} · {post.readTimeMinutes ?? 5} 分钟阅读
-              </span>
-            </div>
+        )}
+        <div className="mt-4 flex items-center gap-3 border-t border-border pt-4">
+          <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-zinc-100">
+            <Image
+              src="/logo.png"
+              alt={post.authorName}
+              fill
+              sizes="32px"
+              className="object-cover"
+            />
           </div>
+          <span className="text-sm font-medium text-primary">
+            {post.authorName}
+          </span>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-8 pb-32">
-        {post.coverImage && (
-          <div className="mb-24 w-full overflow-hidden rounded-xl bg-surface-container">
-            <div className="relative aspect-[16/9]">
-              <PostImage
-                src={post.coverImage}
-                alt={post.coverAlt || post.title}
-                fill
-                sizes="100vw"
-                className="object-cover transition-all duration-700 hover:scale-[1.01]"
-              />
-            </div>
+      {/* Cover image — contained width, natural aspect ratio with max height */}
+      {post.coverImage && (
+        <div className="mb-10 overflow-hidden rounded-lg bg-zinc-100">
+          <div className="relative aspect-[2/1]">
+            <PostImage
+              src={post.coverImage}
+              alt={post.coverAlt || post.title}
+              fill
+              sizes="(min-width: 768px) 720px, 100vw"
+              className="object-cover"
+            />
           </div>
-        )}
+        </div>
+      )}
 
-        <div className={`grid grid-cols-1 gap-16 ${hasRightSidebar ? "lg:grid-cols-12" : "lg:grid-cols-10"}`}>
-          <aside className="hidden lg:col-span-2 lg:block">
-            <div className="sticky top-32 space-y-12">
-              <div className="space-y-4">
-                <span className="block text-[10px] uppercase tracking-[0.2em] text-outline">分享</span>
-                <ShareButtons title={post.title} slug={post.slug} />
-              </div>
+      {/* Content */}
+      <div className={hasRightSidebar ? "grid grid-cols-1 gap-12 lg:grid-cols-12" : ""}>
+        <div className={hasRightSidebar ? "lg:col-span-8" : ""}>
+          <MarkdownRenderer content={post.content} />
 
-              {post.tags.length > 0 && (
-                <div className="space-y-4">
-                  <span className="block text-[10px] uppercase tracking-[0.2em] text-outline">话题</span>
-                  <div className="flex flex-wrap gap-2">
-                    {post.tags.map(({ tag }) => (
-                      <span
-                        key={tag.id}
-                        className="border border-outline-variant/30 px-2 py-1 text-[10px] uppercase tracking-widest"
-                      >
-                        {tag.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </aside>
-
-          <article className={`space-y-12 ${hasRightSidebar ? "lg:col-span-7" : "lg:col-span-8"}`}>
-            {showStandaloneQuote ? (
-              <blockquote className="group border-y border-outline-variant/10 py-12">
-                <p className="mx-auto max-w-2xl text-center font-headline text-3xl italic leading-tight text-primary transition-transform duration-500 group-hover:scale-[1.01] md:text-4xl">
-                  &ldquo;{post.pullQuote}&rdquo;
-                </p>
-              </blockquote>
-            ) : null}
-
-            <MarkdownRenderer content={post.content} dropcap />
-
-            {/* 移动端分享和标签 */}
-            <div className="flex flex-wrap items-center gap-4 border-t border-outline-variant/10 pt-8 lg:hidden">
+          {/* Tags */}
+          {post.tags.length > 0 && (
+            <div className="mt-10 flex flex-wrap items-center gap-2 border-t border-border pt-6">
               {post.tags.map(({ tag }) => (
                 <span
                   key={tag.id}
-                  className="border border-outline-variant/30 px-2 py-1 text-[10px] uppercase tracking-widest"
+                  className="rounded bg-zinc-100 px-2 py-0.5 text-xs text-muted"
                 >
                   {tag.name}
                 </span>
               ))}
             </div>
-
-            <section className="mt-24 flex flex-col items-center gap-8 rounded-xl bg-surface-container-low p-12 text-center md:flex-row md:items-start md:text-left">
-              <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-surface-container-highest">
-                <Image
-                  src="/logo.png"
-                  alt={post.authorName}
-                  fill
-                  sizes="96px"
-                  className="object-cover"
-                />
-              </div>
-              <div className="space-y-4">
-                <h4 className="font-headline text-xl font-bold">{post.authorName}</h4>
-                <p className="text-sm leading-relaxed text-on-surface-variant">
-                  {post.authorBio}
-                </p>
-                <Link
-                  href="/about"
-                  className="inline-block text-[10px] uppercase tracking-widest text-primary transition-all hover:underline hover:underline-offset-4"
-                >
-                  查看更多介绍
-                </Link>
-              </div>
-            </section>
-          </article>
-
-          {hasRightSidebar && (
-            <aside className="space-y-16 lg:col-span-3">
-              <div className="space-y-4">
-                <h5 className="border-b border-outline-variant/10 pb-4 text-[10px] uppercase tracking-[0.2em] text-outline">
-                  相关链接
-                </h5>
-                {relatedLinks.map((link, i) => (
-                  <a
-                    key={i}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-start gap-2 text-sm text-on-surface-variant hover:text-primary"
-                  >
-                    <span className="mt-0.5 shrink-0 text-outline">→</span>
-                    <span className="group-hover:underline group-hover:underline-offset-4">{link.label || link.url}</span>
-                  </a>
-                ))}
-              </div>
-            </aside>
           )}
+
+          {/* Share buttons */}
+          <div className="mt-6 flex items-center gap-4 border-t border-border pt-6">
+            <span className="text-xs font-medium text-muted">分享</span>
+            <ShareButtons title={post.title} slug={post.slug} />
+          </div>
+
+          {/* Author card */}
+          <section className="mt-10 flex items-center gap-4 rounded-lg border border-border p-5">
+            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-zinc-100">
+              <Image
+                src="/logo.png"
+                alt={post.authorName}
+                fill
+                sizes="48px"
+                className="object-cover"
+              />
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-primary">{post.authorName}</h4>
+              <p className="mt-0.5 text-sm text-muted">
+                {post.authorBio}
+              </p>
+            </div>
+          </section>
         </div>
-      </main>
-    </>
+
+        {hasRightSidebar && (
+          <aside className="space-y-4 lg:col-span-4">
+            <h5 className="border-b border-border pb-3 text-xs font-medium text-muted">
+              相关链接
+            </h5>
+            {relatedLinks.map((link, i) => (
+              <a
+                key={i}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-start gap-2 text-sm text-muted hover:text-accent"
+              >
+                <span className="mt-0.5 shrink-0">&rarr;</span>
+                <span className="group-hover:underline">{link.label || link.url}</span>
+              </a>
+            ))}
+          </aside>
+        )}
+      </div>
+    </article>
   );
 }

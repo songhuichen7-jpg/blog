@@ -2,32 +2,20 @@ import Link from "next/link";
 
 export function SiteFooter() {
   return (
-    <footer className="w-full border-t border-zinc-200/15 bg-zinc-50">
-      <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-6 px-8 py-12 md:flex-row">
-        <div className="flex flex-col items-center md:items-start">
-          <span className="font-headline text-lg italic text-zinc-800">The Curator</span>
-          <p className="mt-2 text-sm tracking-wide text-zinc-600">
-            © 2026 The Curator Editorial. 个人研究与写作档案。
-          </p>
-        </div>
+    <footer className="w-full border-t border-border">
+      <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-4 px-6 py-8 md:flex-row">
+        <p className="text-sm text-muted">
+          &copy; {new Date().getFullYear()} Veko's Blog
+        </p>
 
-        <div className="flex items-center gap-8">
-          <Link
-            href="/about"
-            className="text-sm tracking-wide text-zinc-500 transition-all hover:underline hover:underline-offset-4"
-          >
+        <div className="flex items-center gap-6">
+          <Link href="/about" className="text-sm text-muted hover:text-primary">
             关于
           </Link>
-          <Link
-            href="/archive"
-            className="text-sm tracking-wide text-zinc-500 transition-all hover:underline hover:underline-offset-4"
-          >
+          <Link href="/archive" className="text-sm text-muted hover:text-primary">
             归档
           </Link>
-          <Link
-            href="/feed.xml"
-            className="text-sm tracking-wide text-zinc-500 transition-all hover:underline hover:underline-offset-4"
-          >
+          <Link href="/feed.xml" className="text-sm text-muted hover:text-primary">
             RSS
           </Link>
         </div>

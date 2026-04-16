@@ -25,7 +25,7 @@ export function DeletePostButton({ postId }: { postId: string }) {
     <button
       onClick={handleDelete}
       disabled={loading}
-      className="rounded border border-error/30 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-error hover:bg-error/10 disabled:opacity-50"
+      className="rounded border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
     >
       {loading ? "删除中" : "删除"}
     </button>
