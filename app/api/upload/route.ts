@@ -1,10 +1,7 @@
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import { NextResponse } from "next/server";
 
 import { getSession } from "@/lib/auth";
-
-const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join("/tmp", "uploads");
+import { supabase, STORAGE_BUCKET, getPublicUrl } from "@/lib/supabase";
 
 export async function POST(request: Request) {
   const session = await getSession();
@@ -35,9 +32,21 @@ export async function POST(request: Request) {
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
-  await mkdir(UPLOAD_DIR, { recursive: true });
   const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(UPLOAD_DIR, filename), buffer);
 
-  return NextResponse.json({ url: `/api/images/${filename}` });
+  const { error } = await supabase.storage
+    .from(STORAGE_BUCKET)
+    .upload(filename, buffer, {
+      contentType: file.type,
+      cacheControl: "public, max-age=31536000, immutable",
+    });
+
+  if (error) {
+    console.error("Supabase upload error:", error);
+    return NextResponse.json({ message: "上传失败，请稍后再试。" }, { status: 500 });
+  }
+
+  const url = getPublicUrl(filename);
+
+  return NextResponse.json({ url });
 }

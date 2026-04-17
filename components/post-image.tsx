@@ -5,7 +5,7 @@ type Props = Omit<ComponentProps<typeof Image>, "unoptimized">;
 
 export function PostImage({ src, style, ...props }: Props) {
   const s = String(src);
-  const unoptimized = s.startsWith("/uploads/") || s.startsWith("/api/images/");
+  const unoptimized = s.startsWith("/uploads/") || s.startsWith("/api/images/") || s.includes("supabase.co");
   // color: transparent hides alt text when image fails to load
   return (
     <Image
