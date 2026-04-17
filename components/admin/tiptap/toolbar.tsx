@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import type { Editor } from "@tiptap/react";
 import { VideoEmbedDialog } from "./video-embed-dialog";
 

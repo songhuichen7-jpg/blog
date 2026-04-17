@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { PostImage } from "@/components/post-image";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { MarkdownRenderer } from "@/components/markdown-renderer";

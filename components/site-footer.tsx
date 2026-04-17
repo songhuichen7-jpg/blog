@@ -5,7 +5,7 @@ export function SiteFooter() {
     <footer className="w-full border-t border-border">
       <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-4 px-6 py-8 md:flex-row">
         <p className="text-sm text-muted">
-          &copy; {new Date().getFullYear()} Veko's Blog
+          &copy; {new Date().getFullYear()} Veko&apos;s Blog
         </p>
 
         <div className="flex items-center gap-6">

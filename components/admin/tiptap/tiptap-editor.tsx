@@ -82,6 +82,7 @@ export function TiptapEditor({ content, onChange, onImageUpload }: TiptapEditorP
       },
     },
     onUpdate: ({ editor }) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const md = (editor.storage as any).markdown.getMarkdown();
       onChange(md);
     },

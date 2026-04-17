@@ -29,7 +29,7 @@ export function SiteHeader() {
             height={28}
             className="rounded-full object-cover"
           />
-          <span className="text-base font-semibold text-primary">Veko's Blog</span>
+          <span className="text-base font-semibold text-primary">Veko&apos;s Blog</span>
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">

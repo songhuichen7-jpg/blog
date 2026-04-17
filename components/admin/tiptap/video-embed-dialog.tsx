@@ -2,8 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import type { Editor } from "@tiptap/react";
-import { getBilibiliEmbedUrl } from "./bilibili-extension";
-
 function detectPlatform(url: string): "youtube" | "bilibili" | null {
   if (/youtube\.com|youtu\.be/.test(url)) return "youtube";
   if (/bilibili\.com|player\.bilibili\.com/.test(url)) return "bilibili";
